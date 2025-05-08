@@ -32,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insert_esp->execute([$id_usuario, $id_area]);
     }
 
-    header('Location: ../vistas/jefe/gestionar_revisores.php');
+    $noti = urlencode("Correo enviado al nuevo revisor {$email}");
+    header("Location: ../vistas/jefe/gestionar_revisores.php?noti=$noti");
     exit;
     
 }

@@ -1,5 +1,13 @@
 <?php
+
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once(__DIR__ . '/../conexion.php');
+
+
 
 class Formulario {
     public static function articulosAsignadosA($idRevisor) {
@@ -13,10 +21,19 @@ class Formulario {
         $stmt->execute([$idRevisor]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
 
     public static function actualizarEvaluacion($data) {
         global $conn;
+    
+        // Validaciones antes de insertar
+        if (
+            !isset($data['calidad_tecnica'], $data['originalidad'], $data['valoracion_global']) ||
+            $data['calidad_tecnica'] < 1 || $data['calidad_tecnica'] > 10 ||
+            $data['valoracion_global'] < 1 || $data['valoracion_global'] > 10
+        ) {
+            return false;
+        }
+    
         $sql = "UPDATE formulario SET calidad_tecnica = ?, originalidad = ?, valoracion_global = ?, argumentosvg = ?, comentarios_autores = ?
                 WHERE id_usuario = ? AND id_articulo = ?";
         $stmt = $conn->prepare($sql);
@@ -30,29 +47,7 @@ class Formulario {
             $data['id_articulo']
         ]);
     }
-
-    public static function contarYPromediarEvaluaciones($idArticulo) {
-        global $conn;
-        $stmt = $conn->prepare("
-            SELECT COUNT(*) as cantidad,
-                   AVG(valoracion_global) as promedio,
-                   MIN(calidad_tecnica) as tecnica_minima
-            FROM formulario
-            WHERE id_articulo = ?");
-        $stmt->execute([$idArticulo]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
     
-    public static function aceptarSiCumple($idArticulo) {
-        global $conn;
-        $data = self::contarYPromediarEvaluaciones($idArticulo);
-        if ($data['cantidad'] >= 2 && $data['promedio'] >= 5 && $data['tecnica_minima'] > 3) {
-            $stmt = $conn->prepare("UPDATE articulo SET aceptacion = 1 WHERE id_articulo = ?");
-            $stmt->execute([$idArticulo]);
-        }
-    }
+
     
 }
-
-?>
-

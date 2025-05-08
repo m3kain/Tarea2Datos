@@ -14,3 +14,15 @@ sudo /opt/lampp/lampp stop
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+
+SET FOREIGN_KEY_CHECKS = 0;
+
+TRUNCATE TABLE formulario;
+TRUNCATE TABLE escribiendo;
+TRUNCATE TABLE topicos;
+TRUNCATE TABLE articulo;
+TRUNCATE TABLE especializacion;
+TRUNCATE TABLE usuarios;
+
+SET FOREIGN_KEY_CHECKS = 1;

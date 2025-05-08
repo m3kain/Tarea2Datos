@@ -11,9 +11,7 @@ class FormularioController {
         return Formulario::actualizarEvaluacion($post);
     }
     
-    public static function aceptarSiEvaluado($idArticulo) {
-        Formulario::aceptarSiCumple($idArticulo);
-    }
+    
 }    
 
 ?>

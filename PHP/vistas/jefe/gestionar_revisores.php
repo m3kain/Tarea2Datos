@@ -21,13 +21,21 @@ $stmt = $conn->query("SELECT e.id_usuario, a.titulo_area FROM especializacion e 
 foreach ($stmt as $esp) {
     $especializaciones[$esp['id_usuario']][] = $esp['titulo_area'];
 }
+
+// Obtener autores
+$stmtAutores = $conn->query("SELECT id_usuario, nombre, email FROM usuarios WHERE subclase = 2");
+$autores = $stmtAutores->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <h2>Gestión de Revisores</h2>
 <p><a href="../dashboard.php">← Volver al Dashboard</a></p>
 
+<?php if (isset($_GET['noti'])): ?>
+<script>
+    alert(decodeURIComponent(`<?= $_GET['noti'] ?>`));
+</script>
+<?php endif; ?>
 
-<br>
 <h3>Agregar nuevo revisor</h3>
 <form method="POST" action="../../controladores/crear_revisor.php">
     Nombre: <input type="text" name="nombre" required>
@@ -44,13 +52,34 @@ foreach ($stmt as $esp) {
     <button type="submit">Agregar Revisor</button>
 </form>
 
+<h2>Autores existentes</h2>
+<form method="POST" action="../../controladores/ascender_revisor.php">
+    <table border="1" cellpadding="6">
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Acción</th>
+        </tr>
+        <?php foreach ($autores as $autor): ?>
+            <tr>
+                <td><?= htmlspecialchars($autor['nombre']) ?></td>
+                <td><?= htmlspecialchars($autor['email']) ?></td>
+                <td>
+                    <button type="submit" name="id_usuario" value="<?= $autor['id_usuario'] ?>">Autor a Revisor</button>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+</form>
+
+<hr>
 
 <table border="1" cellpadding="5">
     <thead>
         <tr>
             <th>Nombre</th>
             <th>Email</th>
-            <th>Tópicos</th>
+            <th>Especializaciones</th>
             <th>Acciones</th>
         </tr>
     </thead>

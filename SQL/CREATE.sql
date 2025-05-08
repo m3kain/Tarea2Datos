@@ -55,12 +55,59 @@ CREATE TABLE escribiendo (
 CREATE TABLE formulario (
     id_usuario INT,
     id_articulo INT,
-    calidad_tecnica INT CHECK (calidad_tecnica BETWEEN 1 AND 7),
+    calidad_tecnica INT CHECK (calidad_tecnica BETWEEN 1 AND 10),
     originalidad BOOLEAN,
-    valoracion_global INT CHECK (valoracion_global BETWEEN 1 AND 7),
+    valoracion_global INT CHECK (valoracion_global BETWEEN 1 AND 10),
     argumentosvg TEXT,
     comentarios_autores TEXT,
+    manual TINYINT(1) DEFAULT 0,
     PRIMARY KEY (id_usuario, id_articulo),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE RESTRICT,
     FOREIGN KEY (id_articulo) REFERENCES articulo(id_articulo) ON DELETE CASCADE
 );
+
+
+DELIMITER $$
+
+CREATE TRIGGER trigger_actualizar_aceptacion
+AFTER UPDATE ON formulario
+FOR EACH ROW
+BEGIN
+    DECLARE total INT;
+    DECLARE aprobados INT;
+    DECLARE rechazados INT;
+
+    -- Contar evaluaciones completas
+    SELECT COUNT(*) INTO total
+    FROM formulario
+    WHERE id_articulo = NEW.id_articulo
+      AND calidad_tecnica IS NOT NULL
+      AND valoracion_global IS NOT NULL;
+
+    -- Promedios y conteo de originalidad
+    SELECT COUNT(*) INTO aprobados
+    FROM formulario
+    WHERE id_articulo = NEW.id_articulo
+      AND calidad_tecnica >= 5
+      AND valoracion_global >= 5
+      AND originalidad = 1;
+
+    SELECT COUNT(*) INTO rechazados
+    FROM formulario
+    WHERE id_articulo = NEW.id_articulo
+      AND (calidad_tecnica < 5 OR valoracion_global < 5);
+
+    IF total = 3 THEN
+        IF aprobados >= 1 AND rechazados = 0 THEN
+            UPDATE articulo SET aceptacion = 1 WHERE id_articulo = NEW.id_articulo;
+        ELSE
+            UPDATE articulo SET aceptacion = 0 WHERE id_articulo = NEW.id_articulo;
+        END IF;
+    ELSE
+        UPDATE articulo SET aceptacion = NULL WHERE id_articulo = NEW.id_articulo;
+    END IF;
+END$$
+
+DELIMITER ;
+
+

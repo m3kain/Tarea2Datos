@@ -10,7 +10,6 @@ if ($_SESSION['rol'] !== 3 && $_SESSION['rol'] !== 1 && $_SESSION['rol'] !== 4 )
 $mensaje = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (FormularioController::procesarEvaluacion($_POST)) {
-        FormularioController::aceptarSiEvaluado($_POST['id_articulo']);
         $mensaje = "Evaluación guardada y artículo verificado para aceptación.";
     } else {
         $mensaje = "Error al guardar la evaluación.";
@@ -46,8 +45,8 @@ $asignados = FormularioController::obtenerAsignados($_SESSION['id_usuario']);
                     <option value="0" <?= !$f['originalidad'] ? 'selected' : '' ?>>No</option>
                 </select><br>
                 Valoración Global (1-10): <input type="number" name="valoracion_global" min="1" max="10" value="<?= $f['valoracion_global'] ?>"><br>
-                Argumentos: <textarea name="argumentosvg"><?= htmlspecialchars($f['argumentosvg']) ?></textarea><br>
-                Comentarios a autores: <textarea name="comentarios_autores"><?= htmlspecialchars($f['comentarios_autores']) ?></textarea><br><br>
+                Argumentos: <textarea name="argumentosvg"><?= htmlspecialchars($f['argumentosvg'] ?? '') ?></textarea><br>
+                Comentarios a autores: <textarea name="comentarios_autores"><?= htmlspecialchars($f['comentarios_autores'] ?? '') ?></textarea><br><br>
 
                 <button type="submit">Evaluar y Verificar Aceptación</button>
             <?php endif; ?>

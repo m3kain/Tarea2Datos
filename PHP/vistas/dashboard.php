@@ -1,5 +1,10 @@
 <?php
 session_start();
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once '../conexion.php';
 require_once '../modelos/Articulo.php';
 
@@ -28,18 +33,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['buscar'])) {
 <p><a href="perfil.php">Perfil</a></p>
 
 <!-- Controles por tipo de usuario -->
-<?php if (in_array($_SESSION['rol'], [1, 2, 3, 4])): ?>
+<?php if (in_array($_SESSION['rol'], [2, 3, 4])): ?>
     <p><a href="autor/enviar_articulo.php">Enviar nuevo artículo</a></p>
 <?php endif; ?>
 
-<?php if (in_array($_SESSION['rol'], [1, 3, 4])): ?>
+<?php if (in_array($_SESSION['rol'], [3, 4])): ?>
     <p><a href="revisor/evaluar_articulos.php">Evaluar artículos</a></p>
 <?php endif; ?>
 
 <?php if ($_SESSION['rol'] == 1): ?>
     <p><a href="jefe/gestionar_revisores.php">Gestión de revisores</a></p>
-    <p><a href="jefe/asignar_revisores.php">Asignar revisores</a></p>
-
+    <p><a href="jefe/gestion_asignaciones.php">Gestion de asignaciones</a></p>
 <?php endif; ?>
 
 <h2>Buscar artículos</h2>
