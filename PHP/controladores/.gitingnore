@@ -1,0 +1,41 @@
+# Ignora archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Ignora entornos de desarrollo
+.env
+.env.local
+.env.*.local
+
+# Ignora dependencias comunes
+vendor/
+node_modules/
+
+# Archivos temporales y de logs
+*.log
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Archivos de bases de datos locales
+*.sqlite
+*.sqlite3
+*.db
+
+# IDEs y editores
+.vscode/
+.idea/
+*.code-workspace
+
+# Sistemas de cacheo y compilados
+/cache/
+storage/debugbar/
+*.gz
+*.zip
+*.tar
+
+# Archivos personales
+*.pem
+*.key
+*.crt
