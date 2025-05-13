@@ -21,14 +21,21 @@ def asignar_especializaciones(revisores, areas, min_por_revisor=2, max_por_revis
 
 def asignar_escribiendo(autores, articulos, autores_por_articulo=2):
     if len(autores) == 0:
-        raise ValueError("No hay autores disponibles para asignar a los artÃ­culos.")
+        raise ValueError("No hay autores disponibles para asignar a los artículos.")
     relaciones = []
+    autores_utilizados = set()
     for articulo in articulos:
-        disponibles = min(len(autores), autores_por_articulo)
         seleccionados = random.sample(autores, autores_por_articulo)
         for i, autor in enumerate(seleccionados):
             relaciones.append(Escribiendo(id_usuario=autor.id_usuario, id_articulo=articulo.id_articulo, autor_contacto=(i == 0)))
+            autores_utilizados.add(autor.id_usuario)
+
+            # Si el autor era revisor (subclase 3), cambia a 4
+            if autor.subclase == 3:
+                autor.subclase = 4  # autor + revisor
+
     return relaciones
+
 
 def asignar_formularios(revisores, articulos, escribiendo, revisores_por_articulo=3):
     relaciones = []

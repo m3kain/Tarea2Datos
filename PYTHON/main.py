@@ -109,7 +109,7 @@ if __name__ == "__main__":
             prom_val_global = sum(f.valoracion_global for f in valores) / len(valores)
             prom_calidad = sum(f.calidad_tecnica for f in valores) / len(valores)
             
-            articulo.aceptacion = int(prom_val_global >= 5 and prom_calidad > 3)
+            articulo.aceptacion = int(prom_val_global >= 5 and prom_calidad > 5)
         else:
             articulo.aceptacion = None  # Sin evaluaciones, sigue NULL
 

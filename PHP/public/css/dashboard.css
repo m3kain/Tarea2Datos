@@ -1,0 +1,179 @@
+/* styles.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    margin: 40px;
+    color: #333;
+    font-size: 18px;
+}
+
+h2, h3, h4 {
+    color: #222;
+    margin-bottom: 15px;
+    font-size: 24px;
+}
+
+a {
+    color: #0056b3;
+    text-decoration: none;
+    margin-right: 12px;
+    font-weight: bold;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="date"],
+form select {
+    padding: 10px;
+    margin: 6px 0;
+    width: 320px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: block;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 10px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+button:hover {
+    background-color: #0056b3;
+}
+
+#panelFiltros {
+    background-color: #eef;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccd;
+    width: fit-content;
+}
+
+.scrollable-table {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 16px;
+    background-color: white;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: white;
+    font-size: 16px;
+}
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px 16px;
+    text-align: left;
+}
+th {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+}
+tr:hover {
+    background-color: #f0f8ff;
+    transition: background-color 0.3s ease;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 24px;
+    justify-content: center;
+}
+
+.articulo-card {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow-wrap: break-word;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: 220px;
+}
+
+.articulo-card h4 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.articulo-card p {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.card-extra {
+    display: none;
+    margin-top: 12px;
+    border-top: 1px dashed #ccc;
+    padding-top: 12px;
+    width: 100%;
+}
+
+.ver-mas-btn {
+    margin-top: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 15px;
+    align-self: flex-start;
+}
+
+.ver-mas-btn:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+li {
+    background: #fff;
+    margin: 10px 0;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+li form {
+    margin-top: 8px;
+}
+
+@media (max-width: 1200px) {
+    .cards-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .cards-container {
+        grid-template-columns: 1fr;
+    }
+}

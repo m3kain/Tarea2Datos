@@ -47,6 +47,17 @@ try {
         }
 
     } elseif ($accion === 'quitar') {
+        // Verificar si el artículo ya fue evaluado completamente
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM formulario
+        WHERE id_articulo = ? AND calidad_tecnica IS NOT NULL AND valoracion_global IS NOT NULL");
+        $stmt->execute([$id_articulo]);
+        $evaluadas = $stmt->fetchColumn();
+
+        if ((int) $evaluadas >= 3) {
+        header("Location: ../vistas/jefe/gestion_asignaciones.php?view=$view&error=ya_evaluado");
+        exit;
+        }    
+
         $stmt = $conn->prepare("DELETE FROM formulario WHERE id_usuario = ? AND id_articulo = ?");
         $stmt->execute([$id_usuario, $id_articulo]);
     }

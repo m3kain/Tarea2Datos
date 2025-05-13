@@ -115,9 +115,9 @@ class Formulario:
         return cls(
             id_usuario,
             id_articulo,
-            calidad_tecnica=random.randint(1, 7),
+            calidad_tecnica=random.randint(1, 10),
             originalidad=random.choice([True, False]),
-            valoracion_global=random.randint(1, 7),
+            valoracion_global=random.randint(1, 10),
             argumentosvg=fake.sentence(),
             comentarios_autores=fake.sentence()
         )

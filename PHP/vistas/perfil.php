@@ -22,37 +22,45 @@ $usuario = Usuario::obtenerPorID($_SESSION['id_usuario']);
 </script>
 <?php endif; ?>
 
-    
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Usuario</title>
+    <link rel="stylesheet" href="../public/css/perfil.css">
+</head>
+<body>
+<div class="perfil-container">
 
-<h2>Perfil de Usuario</h2>
-<p><strong>Nombre:</strong> <?= htmlspecialchars($usuario['nombre']) ?></p>
-<p><strong>Email:</strong> <?= htmlspecialchars($usuario['email']) ?></p>
-<p><strong>ID:</strong> <?= htmlspecialchars($usuario['id_usuario']) ?></p>
-<p><strong>Rol:</strong>
-    <?php
-        switch ($usuario['subclase']) {
-            case 1: echo "Jefe de Comité"; break;
-            case 2: echo "Autor"; break;
-            case 3: echo "Revisor"; break;
-            case 4: echo "Autor y Revisor"; break;
-            default: echo "Desconocido";
-        }
-    ?>
-</p>
+    <h2>Perfil de Usuario</h2>
+    <p><strong>Nombre:</strong> <?= htmlspecialchars($usuario['nombre']) ?></p>
+    <p><strong>Email:</strong> <?= htmlspecialchars($usuario['email']) ?></p>
+    <p><strong>ID:</strong> <?= htmlspecialchars($usuario['id_usuario']) ?></p>
+    <p><strong>Rol:</strong>
+        <?php
+            switch ($usuario['subclase']) {
+                case 1: echo "Jefe de Comité"; break;
+                case 2: echo "Autor"; break;
+                case 3: echo "Revisor"; break;
+                case 4: echo "Autor y Revisor"; break;
+                default: echo "Desconocido";
+            }
+        ?>
+    </p>
 
-<hr>
-<h3>Gestión de Cuenta</h3>
+    <hr>
+    <h3>Gestión de Cuenta</h3>
 
-<form method="POST" action="../controladores/actualizar_usuario.php">
-    <label>Nombre: <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required></label><br>
-    <label>Email: <input type="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required></label><br>
-    <button type="submit">Actualizar Datos</button>
-</form>
+    <form method="POST" action="../controladores/actualizar_usuario.php">
+        <label>Nombre: <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required></label><br>
+        <label>Email: <input type="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required></label><br>
+        <button type="submit">Actualizar Datos</button>
+    </form>
 
-<form method="POST" action="../controladores/eliminar_usuario.php" onsubmit="return confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.')">
-    <input type="hidden" name="id_usuario" value="<?= $_SESSION['id_usuario'] ?>">
-    <button type="submit" style="color:red;">Eliminar Cuenta</button>
-</form>
+    <form method="POST" action="../controladores/eliminar_usuario.php" onsubmit="return confirm('¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es irreversible.')">
+        <input type="hidden" name="id_usuario" value="<?= $_SESSION['id_usuario'] ?>">
+        <button type="submit" style="color:red;">Eliminar Cuenta</button>
+    </form>
 
 <?php
 if (in_array($usuario['subclase'], [2, 4])) {
@@ -141,8 +149,12 @@ if (in_array($usuario['subclase'], [2, 4])) {
 }
 ?>
 
-<p><a href="dashboard.php">Volver al Dashboard</a></p>
-<p><a href="logout.php">Cerrar sesión</a></p>
+    <p><a href="dashboard.php">Volver al Dashboard</a></p>
+    <p><a href="logout.php">Cerrar sesión</a></p>
+</div>
+</body>
+</html>
+
 
 <script>
 function toggleRevisiones(id) {

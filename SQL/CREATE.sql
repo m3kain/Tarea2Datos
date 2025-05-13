@@ -67,6 +67,26 @@ CREATE TABLE formulario (
 );
 
 
+
+DELIMITER $$
+
+CREATE FUNCTION contar_evaluaciones_completas(id INT) RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE total INT;
+
+    SELECT COUNT(*) INTO total
+    FROM formulario
+    WHERE id_articulo = id
+      AND calidad_tecnica IS NOT NULL
+      AND valoracion_global IS NOT NULL;
+
+    RETURN total;
+END$$
+
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE TRIGGER trigger_actualizar_aceptacion
@@ -109,5 +129,16 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+CREATE OR REPLACE VIEW vista_estado_articulos AS
+SELECT 
+    a.id_articulo,
+    a.titulo,
+    a.aceptacion,
+    COUNT(f.id_usuario) AS total_asignados,
+    SUM(CASE WHEN f.calidad_tecnica IS NOT NULL AND f.valoracion_global IS NOT NULL THEN 1 ELSE 0 END) AS evaluaciones_completadas
+FROM articulo a
+LEFT JOIN formulario f ON a.id_articulo = f.id_articulo
+GROUP BY a.id_articulo, a.titulo, a.aceptacion;
 
 

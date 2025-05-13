@@ -26,3 +26,9 @@ TRUNCATE TABLE especializacion;
 TRUNCATE TABLE usuarios;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+Por si no deja crear function:
+$sudo /opt/lampp/bin/mysql_upgrade -u root -p --socket=/opt/lampp/var/mysql/mysql.sock --skip-version-check
+
+
+
