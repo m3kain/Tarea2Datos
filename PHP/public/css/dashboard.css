@@ -52,13 +52,23 @@ button:hover {
 }
 
 #panelFiltros {
+    display: none;
     background-color: #eef;
-    padding: 12px;
-    margin-top: 12px;
-    border-radius: 8px;
+    padding: 20px;
+    margin-top: 10px;
+    border-radius: 6px;
     border: 1px solid #ccd;
-    width: fit-content;
+    width: 100%;
+    max-width: 800px;
 }
+
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
 
 .scrollable-table {
     max-height: 400px;

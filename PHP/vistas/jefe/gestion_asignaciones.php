@@ -44,18 +44,16 @@ if ($view === 'articulos') {
     $articulosLista = $stmtArticulos->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
+<!-- En tu PHP (gestionar_asignaciones.php) antes de cualquier HTML -->
+<link rel="stylesheet" href="../../public/css/gestionar_asignaciones.css">
 
 <h2>Gestión de Asignaciones</h2>
 <p><a href="../dashboard.php">← Volver al Dashboard</a></p>
-
 <p>
-    <a href="?view=articulos">Vista por Artículos</a> | 
+    <a href="?view=articulos">Vista por Artículos</a> |
     <a href="?view=revisores">Vista por Revisores</a>
 </p>
 
-<form method="POST" action="../../controladores/asignacion_automatica.php">
-    <button type="submit">Asignación Automática</button>
-</form>
 
 <?php if ($view === 'articulos'): ?>
     <h3>Asignar / Quitar Revisor a Artículo</h3>
@@ -78,16 +76,8 @@ if ($view === 'articulos') {
                     <?= $art['evaluaciones_completadas'] ?>/3 evaluadas
                 </td>
                 <td><?= htmlspecialchars($art['autores']) ?></td>
-                <td>
-                    <?php foreach (explode(', ', $art['topicos']) as $topic): ?>
-                        <div style="border: 1px solid #ccc; padding: 4px; margin: 2px;"> <?= htmlspecialchars($topic) ?> </div>
-                    <?php endforeach; ?>
-                </td>
-                <td>
-                    <?php foreach (explode(', ', $art['revisores'] ?? '') as $rev): ?>
-                        <div style="border: 1px solid #ccc; padding: 4px; margin: 2px;"> <?= htmlspecialchars($rev) ?> </div>
-                    <?php endforeach; ?>
-                </td>
+                <td><?= htmlspecialchars($art['topicos']) ?></td>
+                <td><?= htmlspecialchars($art['revisores']) ?></td>
                 <td>
                     <?php if (count($revisoresAsignados) < 3): ?>
                         <form method="POST" action="../../controladores/asignar_quitar.php">
@@ -99,10 +89,10 @@ if ($view === 'articulos') {
                                     <option value="<?= $rev['id_usuario'] ?>"> <?= htmlspecialchars($rev['nombre']) ?> </option>
                                 <?php endforeach; ?>
                             </select>
-                            <button type="submit">Aceptar</button>
+                            <button>Aceptar</button>
                         </form>
                     <?php else: ?>
-                        <div style="color: red;">Máximo 3 revisores</div>
+                        <span style="color:red">Máximo 3 revisores</span>
                     <?php endif; ?>
                 </td>
                 <td>
@@ -115,7 +105,7 @@ if ($view === 'articulos') {
                                 <option value="<?= $rev['id_usuario'] ?>"> <?= htmlspecialchars($rev['nombre']) ?> </option>
                             <?php endforeach; ?>
                         </select>
-                        <button type="submit">Aceptar</button>
+                        <button>Aceptar</button>
                     </form>
                 </td>
             </tr>
@@ -124,72 +114,60 @@ if ($view === 'articulos') {
 <?php else: ?>
     <h3>Asignar / Quitar Artículo a Revisor</h3>
     <table border="1" cellpadding="6">
+    <tr>
+        <th>Nombre</th><th>Tópicos</th><th>Artículos Asignados</th><th>Acción</th>
+    </tr>
+    <?php foreach ($revisoresVista as $rev): ?>
+        <?php
+            $stmtTop = $conn->prepare("SELECT a.titulo_area FROM especializacion e JOIN area a ON a.id_area = e.id_area WHERE e.id_usuario = ?");
+            $stmtTop->execute([$rev['id_usuario']]);
+            $topicos = $stmtTop->fetchAll(PDO::FETCH_COLUMN);
+
+            $stmtArt = $conn->prepare("SELECT ar.id_articulo, ar.titulo FROM formulario f JOIN articulo ar ON f.id_articulo = ar.id_articulo WHERE f.id_usuario = ?");
+            $stmtArt->execute([$rev['id_usuario']]);
+            $artAsignados = $stmtArt->fetchAll(PDO::FETCH_ASSOC);
+
+            $idsAsignados = array_column($artAsignados, 'id_articulo');
+            $artNoAsignados = array_filter($articulosLista, fn($a) => !in_array($a['id_articulo'], $idsAsignados));
+
+            $artValidos = array_filter($artNoAsignados, function ($a) use ($conn) {
+                $stmt = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ?");
+                $stmt->execute([$a['id_articulo']]);
+                return $stmt->fetchColumn() < 3;
+            });
+
+            $opciones = array_merge($artValidos, $artAsignados);
+        ?>
         <tr>
-            <th>Nombre</th><th>Tópicos</th><th>Artículos Asignados</th><th>Asignar</th><th>Quitar</th>
+            <td><?= htmlspecialchars($rev['nombre']) ?></td>
+            <td><?= implode(', ', $topicos) ?></td>
+            <td class="assigned-articles">
+                <?php foreach ($artAsignados as $art): ?>
+                    <div class="article-title-box"><?= htmlspecialchars($art['titulo']) ?></div>
+                <?php endforeach; ?>
+            </td>
+            <td>
+                <form method="POST" action="../../controladores/asignar_quitar.php" class="actions">
+                    <input type="hidden" name="id_usuario" value="<?= $rev['id_usuario'] ?>">
+
+                    <select name="accion" required style="width: 90px;">
+                        <option value="" disabled selected>Acción</option>
+                        <option value="asignar">Asignar</option>
+                        <option value="quitar">Quitar</option>
+                    </select>
+
+                    <select name="id_articulo" required>
+                        <option value="" disabled selected>---</option>
+                        <?php foreach ($opciones as $art): ?>
+                            <option value="<?= $art['id_articulo'] ?>"><?= htmlspecialchars($art['titulo']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <button type="submit">Aceptar</button>
+                </form>
+            </td>
         </tr>
-        <?php foreach ($revisoresVista as $rev): ?>
-            <?php
-                $stmtTop = $conn->prepare("SELECT a.titulo_area FROM especializacion e JOIN area a ON a.id_area = e.id_area WHERE e.id_usuario = ?");
-                $stmtTop->execute([$rev['id_usuario']]);
-                $topicos = $stmtTop->fetchAll(PDO::FETCH_COLUMN);
+    <?php endforeach; ?>
+</table>
 
-                $stmtArt = $conn->prepare("SELECT ar.id_articulo, ar.titulo FROM formulario f JOIN articulo ar ON f.id_articulo = ar.id_articulo WHERE f.id_usuario = ?");
-                $stmtArt->execute([$rev['id_usuario']]);
-                $artAsignados = $stmtArt->fetchAll(PDO::FETCH_ASSOC);
-
-                $idsAsignados = array_column($artAsignados, 'id_articulo');
-                $artNoAsignados = array_filter($articulosLista, fn($a) => !in_array($a['id_articulo'], $idsAsignados));
-            ?>
-            <tr>
-                <td><?= htmlspecialchars($rev['nombre']) ?></td>
-                <td>
-                    <?php foreach ($topicos as $t): ?>
-                        <div style="border: 1px solid #ccc; padding: 4px; margin: 2px;"> <?= htmlspecialchars($t) ?> </div>
-                    <?php endforeach; ?>
-                </td>
-                <td>
-                    <?php foreach ($artAsignados as $art): ?>
-                        <div style="border: 1px solid #ccc; padding: 4px; margin: 2px;"> <?= htmlspecialchars($art['titulo']) ?> </div>
-                    <?php endforeach; ?>
-                </td>
-                <td>
-                    <?php
-                        $artValidos = array_filter($artNoAsignados, function ($a) use ($conn) {
-                            $stmt = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ?");
-                            $stmt->execute([$a['id_articulo']]);
-                            return $stmt->fetchColumn() < 3;
-                        });
-                    ?>
-                    <?php if (!empty($artValidos)): ?>
-                        <form method="POST" action="../../controladores/asignar_quitar.php">
-                            <input type="hidden" name="id_usuario" value="<?= $rev['id_usuario'] ?>">
-                            <input type="hidden" name="accion" value="asignar">
-                            <select name="id_articulo" required>
-                                <option value="" disabled selected>---</option>
-                                <?php foreach ($artValidos as $art): ?>
-                                    <option value="<?= $art['id_articulo'] ?>"> <?= htmlspecialchars($art['titulo']) ?> </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <button type="submit">Aceptar</button>
-                        </form>
-                    <?php else: ?>
-                        <div style="color: red;">Todos los artículos tienen 3 revisores</div>
-                    <?php endif; ?>
-                </td>
-                <td>
-                    <form method="POST" action="../../controladores/asignar_quitar.php">
-                        <input type="hidden" name="id_usuario" value="<?= $rev['id_usuario'] ?>">
-                        <input type="hidden" name="accion" value="quitar">
-                        <select name="id_articulo" required>
-                            <option value="" disabled selected>---</option>
-                            <?php foreach ($artAsignados as $art): ?>
-                                <option value="<?= $art['id_articulo'] ?>"> <?= htmlspecialchars($art['titulo']) ?> </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button type="submit">Aceptar</button>
-                    </form>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-    </table>
 <?php endif; ?>

@@ -38,7 +38,7 @@ $mejores = Articulo::mejoresCalificados();
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard</title>
+    <title>Sistema Congreso</title>
     <link rel="stylesheet" href="../public/css/dashboard.css">
 </head>
 <body>
@@ -68,7 +68,7 @@ $mejores = Articulo::mejoresCalificados();
                 <button type="submit" name="buscar" value="1">Buscar</button>
 
                 <div id="panelFiltros" style="display:none; margin-top: 10px;">
-                    <input type="text" name="resumen" placeholder="Buscar por resumen..."><br>
+                    Resumen: <input type="text" name="resumen" placeholder="Buscar por resumen..."><br>
                     Autor: <input type="text" name="autor" placeholder="Nombre del autor"><br>
                     Revisor: <input type="text" name="revisor" placeholder="Nombre del revisor"><br>
                     Tópico: <input type="text" name="topico" placeholder="Tópico relacionado"><br>
