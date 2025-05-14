@@ -7,6 +7,8 @@ error_reporting(E_ALL);
 
 require_once(__DIR__ . '/../conexion.php');
 require_once(__DIR__ . '/../modelos/Usuario.php');
+$tituloPagina = "Perfil";
+include_once(__DIR__ . '/header.php');
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
@@ -16,11 +18,6 @@ if (!isset($_SESSION['id_usuario'])) {
 $usuario = Usuario::obtenerPorID($_SESSION['id_usuario']);
 ?>
 
-<?php if (isset($_GET['noti']) && $_GET['noti']): ?>
-<script>
-    alert(decodeURIComponent(`<?= $_GET['noti'] ?>`));
-</script>
-<?php endif; ?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -50,10 +47,28 @@ $usuario = Usuario::obtenerPorID($_SESSION['id_usuario']);
 
     <hr>
     <h3>Gestión de Cuenta</h3>
-
     <form method="POST" action="../controladores/actualizar_usuario.php">
-        <label>Nombre: <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required></label><br>
-        <label>Email: <input type="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required></label><br>
+        <label>Nombre:
+            <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required>
+        </label>
+
+        <label>Email:
+            <input type="email" name="email" value="<?= htmlspecialchars($usuario['email']) ?>" required>
+        </label>
+
+        <h4>Cambiar Contraseña</h4>
+        <label>Contraseña actual:
+            <input type="password" name="actual">
+        </label>
+
+        <label>Nueva contraseña:
+            <input type="password" name="nueva">
+        </label>
+
+        <label>Confirmar nueva contraseña:
+            <input type="password" name="confirmar">
+        </label>
+
         <button type="submit">Actualizar Datos</button>
     </form>
 
@@ -74,91 +89,162 @@ if (in_array($usuario['subclase'], [2, 4])) {
     $stmt->execute([$_SESSION['id_usuario']]);
     $articulos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if ($articulos) {
-        echo "<ul>";
-        foreach ($articulos as $art) {
-            $estado = is_null($art['aceptacion']) ? "Pendiente" : ($art['aceptacion'] ? "✅ Aceptado" : "❌ Rechazado");
+    if ($articulos): ?>
+        <div class="articulos-lista fade-in">
+            <?php foreach ($articulos as $art): ?>
+                <div class="articulo-item">
+                    <div>
+                        <strong><?= htmlspecialchars($art['titulo']) ?></strong>
+                        <span class="articulo-estado">
+                            <?= is_null($art['aceptacion']) ? ' - Pendiente' : ($art['aceptacion'] ? ' - ✅ Aceptado' : ' - ❌ Rechazado') ?>
+                        </span>
+                    </div>
 
-            $evalStmt = $conn->prepare("SELECT COUNT(*) FROM formulario
-                                        WHERE id_articulo = ? AND calidad_tecnica IS NOT NULL AND valoracion_global IS NOT NULL");
-            $evalStmt->execute([$art['id_articulo']]);
-            $evaluadas = $evalStmt->fetchColumn();
+                    <?php
+                    $evalStmt = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ? AND calidad_tecnica IS NOT NULL AND valoracion_global IS NOT NULL");
+                    $evalStmt->execute([$art['id_articulo']]);
+                    $evaluadas = $evalStmt->fetchColumn();
 
-            $puedeEditar = false;
-            $fechaValida = strtotime($art['fecha_limite_modificacion']) >= strtotime(date('Y-m-d'));
+                    $puedeEditar = false;
+                    $fechaValida = strtotime($art['fecha_limite_modificacion']) >= strtotime(date('Y-m-d'));
+                    $evalCheck = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ? AND (calidad_tecnica IS NOT NULL OR valoracion_global IS NOT NULL)");
+                    $evalCheck->execute([$art['id_articulo']]);
+                    $yaEvaluado = $evalCheck->fetchColumn() > 0;
+                    if ($fechaValida && !$yaEvaluado) $puedeEditar = true;
+                    ?>
 
-            $evalCheck = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ? AND (calidad_tecnica IS NOT NULL OR valoracion_global IS NOT NULL)");
-            $evalCheck->execute([$art['id_articulo']]);
-            $yaEvaluado = $evalCheck->fetchColumn() > 0;
+                    <div>Evaluaciones completadas: <?= $evaluadas ?>/3</div>
 
-            if ($fechaValida && !$yaEvaluado) {
-                $puedeEditar = true;
-            }
+                    <?php if (isset($_GET['eliminado']) && $_GET['eliminado'] == 1): ?>
+                        <div class="message success">✅ Artículo eliminado correctamente.</div>
+                    <?php endif; ?>
 
-            echo "<li><strong>{$art['titulo']}</strong> - $estado<br>";
+                    <div class="articulo-botones">
+                        <?php if ($puedeEditar): ?>
+                            <a href="autor/editar_articulo.php?id_articulo=<?= $art['id_articulo'] ?>">✏️ Editar</a>
+                        <?php endif; ?>
 
-            if (isset($_GET['eliminado']) && $_GET['eliminado'] == 1) {
-                echo "<p style='color:green;'>✅ Artículo eliminado correctamente.</p>";
-            }
-
-            echo "Evaluaciones completadas: {$evaluadas}/3<br>";
-
-            if ($puedeEditar) {
-                echo "<a href='editar_articulo.php?id_articulo={$art['id_articulo']}' style='color:blue;'>✏️ Editar</a><br>";
-            }
-
-            echo "<form method='POST' action='../controladores/eliminar_articulo.php' style='margin-top:5px;' onsubmit=\"return confirm('¿Estás seguro de eliminar este artículo? Esta acción es irreversible.');\">
-                    <input type='hidden' name='id_articulo' value='{$art['id_articulo']}'>
-                    <button type='submit'>🗑️ Eliminar</button>
-                  </form>";
-
-            if ($evaluadas > 0) {
-                echo "<button onclick=\"toggleRevisiones('rev{$art['id_articulo']}')\">Ver Revisiones</button>";
-                echo "<div id='rev{$art['id_articulo']}' style='display:none;margin-top:5px;'>";
-
-                $revStmt = $conn->prepare("SELECT u.nombre, f.calidad_tecnica, f.originalidad, f.valoracion_global, f.argumentosvg, f.comentarios_autores
-                                            FROM formulario f
-                                            JOIN usuarios u ON f.id_usuario = u.id_usuario
-                                            WHERE f.id_articulo = ? AND f.calidad_tecnica IS NOT NULL AND f.valoracion_global IS NOT NULL");
-                $revStmt->execute([$art['id_articulo']]);
-                $revisiones = $revStmt->fetchAll(PDO::FETCH_ASSOC);
-
-                echo "<table border='1' cellpadding='4'><tr>
-                        <th>Revisor</th><th>Calidad Técnica</th><th>Originalidad</th><th>Valoración Global</th><th>Argumentos</th><th>Comentarios</th>
-                      </tr>";
-                foreach ($revisiones as $r) {
-                    $original = $r['originalidad'] ? 'Sí' : 'No';
-                    echo "<tr>
-                            <td>" . htmlspecialchars($r['nombre']) . "</td>
-                            <td>{$r['calidad_tecnica']}</td>
-                            <td>{$original}</td>
-                            <td>{$r['valoracion_global']}</td>
-                            <td>" . htmlspecialchars($r['argumentosvg']) . "</td>
-                            <td>" . htmlspecialchars($r['comentarios_autores']) . "</td>
-                          </tr>";
-                }
-                echo "</table></div>";
-            }
-
-            echo "</li><br>";
-        }
-        echo "</ul>";
-    } else {
-        echo "<p>No has enviado artículos aún.</p>";
-    }
+                        <form class="delete-form" data-id="<?= $art['id_articulo'] ?>">
+                            <input type="hidden" name="id_articulo" value="<?= $art['id_articulo'] ?>">
+                            <button type="submit" class="btn-eliminar">🗑 Eliminar</button>
+                        </form>
+                    </div>
+                    <?php if ($evaluadas > 0): ?>
+                        <button onclick="toggleRevisiones('rev<?= $art['id_articulo'] ?>')">Ver Revisiones</button>
+                        <div id="rev<?= $art['id_articulo'] ?>" style="display:none; margin-top:5px;">
+                            <table border="1" cellpadding="4" class="tabla-revisiones">
+                                <tr>
+                                    <th>Revisor</th><th>Calidad Técnica</th><th>Originalidad</th><th>Valoración Global</th><th>Argumentos</th><th>Comentarios</th>
+                                </tr>
+                                <?php
+                                $revStmt = $conn->prepare("SELECT u.nombre, f.calidad_tecnica, f.originalidad, f.valoracion_global, f.argumentosvg, f.comentarios_autores
+                                                        FROM formulario f JOIN usuarios u ON f.id_usuario = u.id_usuario
+                                                        WHERE f.id_articulo = ? AND f.calidad_tecnica IS NOT NULL AND f.valoracion_global IS NOT NULL");
+                                $revStmt->execute([$art['id_articulo']]);
+                                foreach ($revStmt->fetchAll(PDO::FETCH_ASSOC) as $r): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($r['nombre']) ?></td>
+                                        <td><?= $r['calidad_tecnica'] ?></td>
+                                        <td><?= $r['originalidad'] ? 'Sí' : 'No' ?></td>
+                                        <td><?= $r['valoracion_global'] ?></td>
+                                        <td><?= htmlspecialchars($r['argumentosvg']) ?></td>
+                                        <td><?= htmlspecialchars($r['comentarios_autores']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <p>No has enviado artículos aún.</p>
+    <?php endif;
 }
 ?>
+<div style="margin-top: 20px;">
+    <a href="logout.php" class="btn-logout">Cerrar sesión</a>
+</div>
 
-    <p><a href="dashboard.php">Volver al Dashboard</a></p>
-    <p><a href="logout.php">Cerrar sesión</a></p>
 </div>
 </body>
-</html>
 
+<div id="toast" class="toast" style="display:none;"></div>
 
 <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const msg = params.get("noti");
+    if (msg) showToast(decodeURIComponent(msg));
+});
+
+function showToast(text) {
+    const toast = document.getElementById("toast");
+    toast.innerText = text;
+    toast.style.display = "block";
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        toast.style.display = "none";
+    }, 4000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.delete-form').forEach(form => {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const confirmed = confirm("¿Estás seguro de eliminar este artículo? Esta acción es irreversible.");
+      if (confirmed) {
+        form.submit(); // continúa si se confirma
+      }
+    });
+  });
+});
+
+
+function eliminarArticulo(form) {
+    event.preventDefault();
+
+    if (!confirm("¿Estás seguro de eliminar este artículo? Esta acción es irreversible.")) return;
+
+    const formData = new FormData(form);
+    fetch('../controladores/eliminar_articulo.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        mostrarNotificacion(data.message, data.status === "success" ? "success" : "error");
+        if (data.status === "success") {
+            form.closest(".articulo-item")?.remove();
+        }
+    })
+    .catch(err => {
+        mostrarNotificacion("❌ Error de red o servidor.");
+    });
+
+    return false;
+}
+
+// Utilidad visual para mostrar notificaciones flotantes
+function mostrarNotificacion(mensaje, tipo = "info") {
+    const div = document.createElement("div");
+    div.textContent = mensaje;
+    div.className = "toast " + tipo;
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 4000);
+}
+
 function toggleRevisiones(id) {
     const el = document.getElementById(id);
     el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
+
 </script>
+
+
+
+</html>
+
+

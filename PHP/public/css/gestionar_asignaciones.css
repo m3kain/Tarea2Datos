@@ -216,3 +216,64 @@ td:nth-child(2) .topico-box {
     padding-left: 20px;
     text-align: left;
 }
+
+.asignacion-title {
+    text-align: center;
+    font-size: 28px;
+    margin-top: 40px;
+    margin-bottom: 25px;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.asignacion-vistas {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.vista-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.vista-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.vista-btn.active {
+    background-color: #004080;
+}
+
+.asignacion-subtitulo {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    color: #111;
+}
+
+.auto-btn {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.auto-btn:hover {
+    background-color: #218838;
+}

@@ -5,6 +5,8 @@ if (isset($_SESSION['id_usuario'])) {
     exit;
 }
 ?>
+<link rel="stylesheet" href="../public/css/login.css">
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -13,23 +15,28 @@ if (isset($_SESSION['id_usuario'])) {
     <title>Iniciar sesión</title>
 </head>
 <body>
+  <div class="login-container">
     <h2>Login de Usuario</h2>
 
     <?php if (isset($_GET['error'])): ?>
-        <p style="color:red"><?= htmlspecialchars($_GET['error']) ?></p>
+      <div class="error"><?= htmlspecialchars($_GET['error']) ?></div>
     <?php endif; ?>
 
     <form method="POST" action="../controladores/LoginController.php">
+      <div class="form-group">
         <label for="email">Correo:</label>
-        <input type="email" name="email" required><br><br>
+        <input type="email" name="email" required>
+      </div>
 
+      <div class="form-group">
         <label for="password">Contraseña:</label>
-        <input type="password" name="password" required><br><br>
+        <input type="password" name="password" required>
+      </div>
 
-        <input type="submit" value="Iniciar sesión">
+      <input type="submit" class="submit-btn" value="Iniciar sesión">
     </form>
 
-    <a href="register.php">Registrarse</a>
-
+    <a class="register-link" href="register.php">Registrarse</a>
+  </div>
 </body>
 </html>

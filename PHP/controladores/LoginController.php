@@ -12,7 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($usuario && $usuario['password'] === $password) {
         $_SESSION['id_usuario'] = $usuario['id_usuario'];
         $_SESSION['nombre'] = $usuario['nombre'];
-        $_SESSION['rol'] = $usuario['subclase']; // ✅ clave para control de rol
+        $_SESSION['rol'] = $usuario['subclase'];
+        $_SESSION['email'] = $usuario['email'];
+        $_SESSION['subclase'] = $usuario['subclase']; 
         header("Location: ../vistas/dashboard.php");
         exit;
     } else {

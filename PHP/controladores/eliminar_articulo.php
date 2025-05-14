@@ -1,38 +1,49 @@
 <?php
 session_start();
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 require_once(__DIR__ . '/../conexion.php');
+
+header('Content-Type: application/json');
 
 $idArticulo = $_POST['id_articulo'] ?? null;
 $idUsuario = $_SESSION['id_usuario'] ?? null;
+$subclase = $_SESSION['rol'] ?? null;
 
 if (!$idArticulo || !$idUsuario) {
-    die("Parámetros faltantes.");
+    echo json_encode(["status" => "error", "message" => "❌ Parámetros faltantes."]);
+    exit;
 }
 
-// Verificar si el usuario es autor del artículo
-$stmt = $conn->prepare("SELECT COUNT(*) FROM escribiendo WHERE id_articulo = ? AND id_usuario = ?");
-$stmt->execute([$idArticulo, $idUsuario]);
+// Validación de permiso
+if ((int)$subclase === 1) {
+    $permiso = true;
+} else {
+    $stmt = $conn->prepare("SELECT autor_contacto FROM escribiendo WHERE id_articulo = ? AND id_usuario = ?");
+    $stmt->execute([$idArticulo, $idUsuario]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if ($stmt->fetchColumn() == 0) {
-    die("No tienes permisos para eliminar este artículo.");
+    if (!$row) {
+        echo json_encode(["status" => "error", "message" => "❌ El usuario no está registrado como autor."]);
+        exit;
+    }
+
+    if ((int)$row['autor_contacto'] !== 1) {
+        echo json_encode(["status" => "error", "message" => "🚫 No es autor de contacto."]);
+        exit;
+    }
+
+    $permiso = true;
 }
 
-// Eliminar evaluaciones (formulario)
+if (!$permiso) {
+    echo json_encode(["status" => "error", "message" => "🚫 No tienes permisos para eliminar este artículo."]);
+    exit;
+}
+
+// Eliminar
 $conn->prepare("DELETE FROM formulario WHERE id_articulo = ?")->execute([$idArticulo]);
-
-// Eliminar tópicos
 $conn->prepare("DELETE FROM topicos WHERE id_articulo = ?")->execute([$idArticulo]);
-
-// Eliminar autores
 $conn->prepare("DELETE FROM escribiendo WHERE id_articulo = ?")->execute([$idArticulo]);
-
-// Finalmente eliminar artículo
 $conn->prepare("DELETE FROM articulo WHERE id_articulo = ?")->execute([$idArticulo]);
 
-header("Location: ../vistas/perfil.php?borrado=1");
+echo json_encode(["status" => "success", "message" => "✅ Artículo eliminado correctamente."]);
 exit;

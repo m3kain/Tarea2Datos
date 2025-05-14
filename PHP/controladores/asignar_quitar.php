@@ -69,3 +69,6 @@ try {
     header("Location: ../vistas/jefe/gestion_asignaciones.php?view=$view&error=bd");
     exit;
 }
+
+echo json_encode(["status" => "ok"]);
+exit;

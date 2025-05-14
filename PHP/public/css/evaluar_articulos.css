@@ -1,0 +1,177 @@
+/* evaluar_articulos.css */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  body {
+    background-color: #f5f7fa;
+    margin: 0;
+  }
+  
+  header {
+    background: #007bff;
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  header nav a {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+  }
+  
+  header nav a:hover {
+    text-decoration: underline;
+  }
+  
+  .evaluacion-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 1.5rem;
+  }
+  
+  .back-link {
+    color: #007bff;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    display: inline-block;
+  }
+  
+  .back-link:hover {
+    text-decoration: underline;
+  }
+  
+  .message {
+    text-align: center;
+    color: green;
+    margin-bottom: 1rem;
+  }
+  
+  .evaluacion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .form-articulo {
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+  
+  .form-articulo fieldset {
+    border: none;
+    padding: 0;
+  }
+  
+  .form-articulo legend {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    color: #333;
+  }
+  
+  .form-articulo label {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: #444;
+    font-weight: 500;
+  }
+  
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #fff;
+  }
+  
+  textarea {
+    resize: vertical;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  .estado.verde {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .estado.rojo {
+    color: crimson;
+    font-weight: bold;
+  }
+  
+  .historial-panel {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+  }
+  
+  .historial-panel h3 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .historial {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .historial.hidden {
+    display: none;
+  }
+  
+  .historial-item {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .historial-item strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }

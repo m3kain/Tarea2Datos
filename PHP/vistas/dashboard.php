@@ -42,6 +42,7 @@ $mejores = Articulo::mejoresCalificados();
     <link rel="stylesheet" href="../public/css/dashboard.css">
 </head>
 <body>
+
     <header style="background: #007bff; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
         <div><strong>Bienvenido, <?= htmlspecialchars($_SESSION['nombre'] ?? 'Usuario') ?></strong></div>
         <nav>
@@ -58,7 +59,7 @@ $mejores = Articulo::mejoresCalificados();
             <?php endif; ?>
         </nav>
     </header>
-
+    
     <main style="padding: 20px; max-width: 1000px; margin: auto;">
         <section>
             <h2>Buscar artículos</h2>

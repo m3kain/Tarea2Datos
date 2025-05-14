@@ -27,9 +27,12 @@ $areas = $conn->query("SELECT * FROM area")->fetchAll(PDO::FETCH_ASSOC);
 $view = $_GET['view'] ?? 'autores';
 ?>
 <link rel="stylesheet" href="../../public/css/gestionar_revisores.css">
+<?php
+$tituloPagina = 'Gestión de Revisores';
+include_once(__DIR__ . '/../header.php');
+?>
 
-<h2>Gestión de Revisores</h2>
-<p><a href="../dashboard.php">← Volver al Dashboard</a></p>
+
 
 <div class="agregar-revisor-panel">
     <h3>Agregar nuevo revisor</h3>
@@ -84,7 +87,7 @@ $view = $_GET['view'] ?? 'autores';
                 <td><?= isset($especializaciones[$rev['id_usuario']]) ? implode(', ', $especializaciones[$rev['id_usuario']]) : 'Sin especialización' ?></td>
                 <td>
                     <a href="editar_revisor.php?id=<?= $rev['id_usuario'] ?>">Editar</a> |
-                    <a href="../../controladores/eliminar_revisor.php?id=<?= $rev['id_usuario'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este revisor?')">Eliminar</a>
+                    <a href="../../controladores/eliminar_revisor.php?id=<?= $rev['id_usuario'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este revisor?\nSus reseñas se eliminaran definitivamente')">Eliminar</a>
                 </td>
             </tr>
         <?php endforeach; ?>
