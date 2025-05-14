@@ -1,0 +1,61 @@
+/* public/css/editar_revisor.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9fafb;
+    margin: 20px;
+    color: #111827;
+    text-align: center;
+}
+
+h2 {
+    color: #1f2937;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+table {
+    margin: 0 auto;
+    border-spacing: 20px;
+    text-align: left;
+}
+
+label {
+    font-size: 16px;
+    font-weight: 500;
+    color: #374151;
+}
+
+input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2);
+    accent-color: #2563eb;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background-color: #2563eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+a {
+    display: inline-block;
+    margin-top: 15px;
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

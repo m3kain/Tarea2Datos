@@ -70,7 +70,7 @@ include_once(__DIR__ . '/../header.php');
         : 'Asignar / Quitar Artículo a Revisor' ?>
 </h3>
 
-<form method="POST" action="../../controladores/asignar_automatico.php" style="text-align:center; margin-bottom:20px;">
+<form method="POST" action="../../controladores/asignacion_automatica.php" style="text-align:center; margin-bottom:20px;">
     <button type="submit" class="auto-btn">🔁 Asignación Automática</button>
 </form>
 

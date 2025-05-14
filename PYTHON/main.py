@@ -71,7 +71,7 @@ def generar_areas():
 def generar_articulos():
     articulos = []
     for i in range(1, 401):
-        aceptacion = random.choice([None, 0, 1])  # None = en proceso
+        aceptacion = None
         titulo = fake.sentence(nb_words=6).replace("'", "")
         resumen = fake.text(max_nb_chars=100).replace("'", "")
         fecha_envio = fake.date_between(start_date=date(2019, 1, 1), end_date=date(2025, 1, 1))
@@ -101,17 +101,6 @@ if __name__ == "__main__":
     evaluaciones = defaultdict(list)
     for f in formularios:
         evaluaciones[f.id_articulo].append(f)
-
-    # Aplicar lógica de aceptación
-    for articulo in articulos:
-        if articulo.id_articulo in evaluaciones:
-            valores = evaluaciones[articulo.id_articulo]
-            prom_val_global = sum(f.valoracion_global for f in valores) / len(valores)
-            prom_calidad = sum(f.calidad_tecnica for f in valores) / len(valores)
-            
-            articulo.aceptacion = int(prom_val_global >= 5 and prom_calidad > 5)
-        else:
-            articulo.aceptacion = None  # Sin evaluaciones, sigue NULL
 
 
     # Insertar usuarios

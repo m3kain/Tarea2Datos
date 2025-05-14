@@ -128,12 +128,13 @@ class Articulo {
                 LEFT JOIN usuarios u ON e.id_usuario = u.id_usuario
                 GROUP BY a.id_articulo
                 HAVING originalidad = 1
-                ORDER BY promedio_tecnica DESC, promedio_valoracion DESC
+                ORDER BY (AVG(f.calidad_tecnica) + AVG(f.valoracion_global)) / 2 DESC
                 LIMIT 15";
-
+    
         $stmt = $conn->prepare($sql);
         $stmt->execute();
-
+    
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
 }

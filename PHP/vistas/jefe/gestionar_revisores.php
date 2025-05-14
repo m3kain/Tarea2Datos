@@ -60,6 +60,16 @@ include_once(__DIR__ . '/../header.php');
     <a href="?view=revisores">Vista Revisores</a>
 </p>
 
+
+
+<div id="modal-editar" class="modal hidden">
+    <div class="modal-content">
+        <button id="cerrar-panel-btn" style="float: right; background: transparent; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+        <div id="modal-body">Cargando...</div> <!-- ✅ Este DIV es crucial -->
+    </div>
+</div>
+
+
 <?php if ($view === 'autores'): ?>
     <h3>Autores Existentes</h3>
     <form method="POST" action="../../controladores/ascender_revisor.php">
@@ -86,10 +96,65 @@ include_once(__DIR__ . '/../header.php');
                 <td><?= htmlspecialchars($rev['email']) ?></td>
                 <td><?= isset($especializaciones[$rev['id_usuario']]) ? implode(', ', $especializaciones[$rev['id_usuario']]) : 'Sin especialización' ?></td>
                 <td>
-                    <a href="editar_revisor.php?id=<?= $rev['id_usuario'] ?>">Editar</a> |
-                    <a href="../../controladores/eliminar_revisor.php?id=<?= $rev['id_usuario'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este revisor?\nSus reseñas se eliminaran definitivamente')">Eliminar</a>
+                    <button class="btn-editar boton-accion" data-id="<?= $rev['id_usuario'] ?>">Editar</button>
+                    <a href="../../controladores/eliminar_revisor.php?id=<?= $rev['id_usuario'] ?>" onclick="return confirm('¿Seguro que deseas eliminar este revisor?\nSus reseñas se eliminarán definitivamente')">Eliminar</a>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
+    <link rel="stylesheet" href="../../public/css/gestionar_revisores.css?v=1">
+
 <?php endif; ?>
+
+<script>
+function cerrarModal() {
+    const modal = document.getElementById('modal-editar');
+    modal.classList.add('hidden');
+    document.getElementById('modal-body').innerHTML = '';
+}
+
+document.querySelectorAll('.btn-editar').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const modal = document.getElementById('modal-editar');
+        const body = document.getElementById('modal-body');
+
+        modal.classList.remove('hidden');
+        body.innerHTML = 'Cargando...';
+
+        fetch('./editar_revisor_modal.php?id=' + id)
+            .then(res => res.text())
+            .then(html => {
+                body.innerHTML = html;
+            });
+    });
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'cerrar-panel-btn') {
+        cerrarModal();
+    }
+});
+
+
+document.addEventListener('submit', function(e) {
+    if (e.target.matches('#form-especialidades')) {
+        e.preventDefault();
+        const form = e.target;
+        const data = new FormData(form);
+
+        fetch('../../controladores/actualizar_especialidades.php', {
+            method: 'POST',
+            body: data
+        }).then(res => res.text())
+          .then(() => {
+              cerrarModal();
+              location.reload();
+          });
+    }
+});
+
+
+
+</script>
+

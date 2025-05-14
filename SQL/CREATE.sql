@@ -86,49 +86,61 @@ END$$
 
 DELIMITER ;
 
-
 DELIMITER $$
 
-CREATE TRIGGER trigger_actualizar_aceptacion
-AFTER UPDATE ON formulario
-FOR EACH ROW
+CREATE PROCEDURE evaluar_aceptacion(IN articulo_id INT)
 BEGIN
-    DECLARE total INT;
-    DECLARE aprobados INT;
-    DECLARE rechazados INT;
+    DECLARE total INT DEFAULT 0;
+    DECLARE promedio_valoracion FLOAT DEFAULT 0;
+    DECLARE promedio_calidad FLOAT DEFAULT 0;
+    DECLARE originales INT DEFAULT 0;
 
-    -- Contar evaluaciones completas
-    SELECT COUNT(*) INTO total
-    FROM formulario
-    WHERE id_articulo = NEW.id_articulo
-      AND calidad_tecnica IS NOT NULL
-      AND valoracion_global IS NOT NULL;
-
-    -- Promedios y conteo de originalidad
-    SELECT COUNT(*) INTO aprobados
-    FROM formulario
-    WHERE id_articulo = NEW.id_articulo
-      AND calidad_tecnica >= 5
-      AND valoracion_global >= 5
-      AND originalidad = 1;
-
-    SELECT COUNT(*) INTO rechazados
-    FROM formulario
-    WHERE id_articulo = NEW.id_articulo
-      AND (calidad_tecnica < 5 OR valoracion_global < 5);
+    SET total = contar_evaluaciones_completas(articulo_id);
 
     IF total = 3 THEN
-        IF aprobados >= 1 AND rechazados = 0 THEN
-            UPDATE articulo SET aceptacion = 1 WHERE id_articulo = NEW.id_articulo;
+        SELECT 
+            AVG(valoracion_global),
+            AVG(calidad_tecnica)
+        INTO 
+            promedio_valoracion,
+            promedio_calidad
+        FROM formulario
+        WHERE id_articulo = articulo_id
+          AND calidad_tecnica IS NOT NULL
+          AND valoracion_global IS NOT NULL;
+
+        SELECT COUNT(*) INTO originales
+        FROM formulario
+        WHERE id_articulo = articulo_id
+          AND originalidad = 1;
+
+        IF promedio_valoracion > 3 AND promedio_calidad > 5 AND originales >= 1 THEN
+            UPDATE articulo SET aceptacion = 1 WHERE id_articulo = articulo_id;
         ELSE
-            UPDATE articulo SET aceptacion = 0 WHERE id_articulo = NEW.id_articulo;
+            UPDATE articulo SET aceptacion = 0 WHERE id_articulo = articulo_id;
         END IF;
     ELSE
-        UPDATE articulo SET aceptacion = NULL WHERE id_articulo = NEW.id_articulo;
+        UPDATE articulo SET aceptacion = NULL WHERE id_articulo = articulo_id;
     END IF;
 END$$
 
 DELIMITER ;
+
+CREATE TRIGGER trigger_actualizar_aceptacion
+AFTER INSERT ON formulario
+FOR EACH ROW
+BEGIN
+    CALL evaluar_aceptacion(NEW.id_articulo);
+END;
+
+CREATE TRIGGER trigger_actualizar_aceptacion_update
+AFTER UPDATE ON formulario
+FOR EACH ROW
+BEGIN
+    CALL evaluar_aceptacion(NEW.id_articulo);
+END;
+
+
 
 CREATE OR REPLACE VIEW vista_estado_articulos AS
 SELECT 

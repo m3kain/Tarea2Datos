@@ -37,7 +37,7 @@ def asignar_escribiendo(autores, articulos, autores_por_articulo=2):
     return relaciones
 
 
-def asignar_formularios(revisores, articulos, escribiendo, revisores_por_articulo=3):
+def asignar_formularios(revisores, articulos, escribiendo):
     relaciones = []
     for articulo in articulos:
         # Revisores que NO son autores del artículo
@@ -49,7 +49,7 @@ def asignar_formularios(revisores, articulos, escribiendo, revisores_por_articul
         if not posibles:
             continue  # Evita error si no hay revisores disponibles
 
-        seleccionados = random.sample(posibles, min(len(posibles), revisores_por_articulo))
+        seleccionados = random.sample(posibles, min(len(posibles), random.randint(1, 3)))
         for revisor in seleccionados:
             formulario = Formulario.create_random(revisor.id_usuario, articulo.id_articulo)
             relaciones.append(formulario)
