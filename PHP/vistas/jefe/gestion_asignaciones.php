@@ -41,23 +41,60 @@ if ($view === 'articulos') {
 
     $stmtRevisores = $conn->query("SELECT id_usuario, nombre FROM usuarios WHERE subclase IN (3, 4)");
     $revisores = $stmtRevisores->fetchAll(PDO::FETCH_ASSOC);
-} else {
+}if ($view !== 'articulos') {
+    // Solo si estamos en la vista de revisores
     $stmt = $conn->query("SELECT u.id_usuario, u.nombre
-                            FROM usuarios u
-                            WHERE u.subclase IN (3, 4)");
+                          FROM usuarios u
+                          WHERE u.subclase IN (3, 4)");
     $revisoresVista = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $stmtArticulos = $conn->query("SELECT id_articulo, titulo FROM articulo");
     $articulosLista = $stmtArticulos->fetchAll(PDO::FETCH_ASSOC);
+
+    // Cargar pendientes/revisados para ordenar
+    foreach ($revisoresVista as &$rev) {
+        $stmt = $conn->prepare("SELECT ar.id_articulo, ar.titulo FROM formulario f JOIN articulo ar ON f.id_articulo = ar.id_articulo WHERE f.id_usuario = ?");
+        $stmt->execute([$rev['id_usuario']]);
+        $asignados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $rev['pendientes'] = [];
+
+        foreach ($asignados as $art) {
+            $estadoStmt = $conn->prepare("SELECT aceptacion FROM articulo WHERE id_articulo = ?");
+            $estadoStmt->execute([$art['id_articulo']]);
+            $estado = $estadoStmt->fetchColumn();
+
+            if (is_null($estado)) {
+                $rev['pendientes'][] = $art;
+            }
+        }
+    }
+
+    // ✅ Ordena de menor a mayor pendientes
+    usort($revisoresVista, function ($a, $b) {
+        return count($a['pendientes']) <=> count($b['pendientes']);
+    });
 }
+
+
 ?>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <link rel="stylesheet" href="../../public/css/gestionar_asignaciones.css">
+
+
 <?php
 $tituloPagina = "Gestión de Asignaciones";
 include_once(__DIR__ . '/../header.php');
 ?>
+<script src="../../public/js/gestionar_asignaciones.js"></script>
 
-<h2 class="asignacion-title">Asignaciones</h2>
+<head>
+    <meta charset="UTF-8">
+    <title>Gescon</title>
+</head>
+
+<h2 class="asignacion-title">📋 Asignaciones</h2>
 
 <div class="asignacion-vistas">
     <a href="?view=articulos" class="vista-btn <?= ($view === 'articulos') ? 'active' : '' ?>">📝 Vista por Artículos</a>
@@ -74,10 +111,12 @@ include_once(__DIR__ . '/../header.php');
     <button type="submit" class="auto-btn">🔁 Asignación Automática</button>
 </form>
 
+
+
 <?php if ($view === 'articulos'): ?>
     <div style="text-align:center; margin: 20px auto;">
-        <input type="number" id="delete-id" placeholder="ID del artículo" style="padding: 6px; width: 200px;">
-        <button onclick="eliminarPorID()" class="delete-btn">Eliminar Artículo</button>
+        <input type="number" id="delete-id" class="form-control d-inline w-auto me-2" placeholder="ID del artículo">
+        <button onclick="eliminarPorID()" class="btn btn-danger">Eliminar</button>
         <div id="delete-alert" style="margin-top:10px; display:none; padding:10px; border-radius:4px;"></div>
     </div>
     <table border="1" cellpadding="6">
@@ -89,7 +128,11 @@ include_once(__DIR__ . '/../header.php');
                 $idsAsignados = array_filter(explode(',', $art['id_revisores'] ?? ''));
                 $revisoresAsignados = array_filter($revisores, fn($r) => in_array($r['id_usuario'], $idsAsignados));
             ?>
-            <tr id="row-<?= $art['id_articulo'] ?>" data-title="<?= htmlspecialchars($art['titulo']) ?>" data-contacto="<?= htmlspecialchars($art['autor_contacto']) ?>">
+            <tr id="row-<?= $art['id_articulo'] ?>" 
+                data-title="<?= htmlspecialchars($art['titulo']) ?>" 
+                data-contacto="<?= htmlspecialchars($art['autor_contacto']) ?>"
+                data-revisores="<?= count($revisoresAsignados) ?>">
+
                 <td><?= $art['id_articulo'] ?></td>
                 <td><?= htmlspecialchars($art['titulo']) ?></td>
                 <td>
@@ -100,7 +143,7 @@ include_once(__DIR__ . '/../header.php');
                 </td>
                 <td><?= htmlspecialchars($art['autores']) ?></td>
                 <td><?= htmlspecialchars($art['topicos']) ?></td>
-                <td><?= htmlspecialchars($art['revisores']) ?></td>
+                <td><?= htmlspecialchars($art['revisores'] ?? '') ?></td>
                 <td>
                     <?php if (count($revisoresAsignados) < 3): ?>
                         <form method="POST" action="../../controladores/asignar_quitar.php">
@@ -125,7 +168,16 @@ include_once(__DIR__ . '/../header.php');
                         <select name="id_usuario" required>
                             <option value="" disabled selected>---</option>
                             <?php foreach ($revisoresAsignados as $rev): ?>
-                                <option value="<?= $rev['id_usuario'] ?>"> <?= htmlspecialchars($rev['nombre']) ?> </option>
+                                <?php
+                                    $stmtEval = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_articulo = ? AND id_usuario = ? AND calidad_tecnica IS NOT NULL");
+                                    $stmtEval->execute([$art['id_articulo'], $rev['id_usuario']]);
+                                    $yaEvaluo = $stmtEval->fetchColumn() > 0;
+                                ?>
+                                <option
+                                    value="<?= $rev['id_usuario'] ?>" 
+                                    data-evaluado="<?= $yaEvaluo ? '1' : '0' ?>"> 
+                                    <?= htmlspecialchars($rev['nombre']) ?> 
+                                </option>
                             <?php endforeach; ?>
                         </select>
                         <button>Aceptar</button>
@@ -135,61 +187,172 @@ include_once(__DIR__ . '/../header.php');
         <?php endforeach; ?>
     </table>
 
-    <form id="delete-form" method="POST" action="../../controladores/eliminar_articulo.php" style="display:none;">
-        <input type="hidden" name="id_articulo" id="hidden-delete-id">
-    </form>
-
     <script>
-    function eliminarPorID() {
-        const id = document.getElementById('delete-id').value;
-        const row = document.getElementById('row-' + id);
-        const alertBox = document.getElementById('delete-alert');
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll("tr[id^='row-']").forEach(row => {
+            const revisoresAsignados = parseInt(row.dataset.revisores || "0");
+            if (revisoresAsignados <= 2) {
+                row.style.backgroundColor = "#fff3cd";
+                row.style.borderLeft = "5px solid #ffc107";
+            }
+        });
 
-        if (!row) {
+        document.querySelectorAll(".actions form").forEach(form => {
+            form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                const response = await fetch(this.action, {
+                    method: "POST",
+                    body: formData
+                });
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("Ocurrió un error al procesar la acción.");
+                }
+            });
+        });
+
+        document.querySelectorAll('.accion-select').forEach(select => {
+            select.addEventListener('change', () => {
+                const action = select.value;
+                const userId = select.dataset.id;
+                const articuloSelect = document.querySelector(`#articulos-${userId}`);
+
+                articuloSelect.querySelectorAll('option[data-mode]').forEach(opt => {
+                    opt.style.display = 'none';
+                });
+
+                articuloSelect.querySelectorAll(`option[data-mode="${action}"]`).forEach(opt => {
+                    opt.style.display = 'block';
+                });
+
+                articuloSelect.selectedIndex = 0;
+            });
+        });
+    });
+    </script>
+
+<script>
+function showCustomConfirm(message, callback) {
+    const modal = document.getElementById("custom-confirm");
+    const msg = document.getElementById("custom-confirm-msg");
+    msg.textContent = message;
+
+    modal.style.display = "flex";
+
+    const confirmYes = document.getElementById("confirm-yes");
+    const confirmNo = document.getElementById("confirm-no");
+
+    const closeModal = () => {
+        modal.style.display = "none";
+        confirmYes.onclick = null;
+        confirmNo.onclick = null;
+    };
+
+    confirmYes.onclick = () => {
+        closeModal();
+        callback(true);
+    };
+
+    confirmNo.onclick = () => {
+        closeModal();
+        callback(false);
+    };
+}
+</script>
+
+<div id="custom-confirm" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000099; z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:20px; border-radius:10px; max-width:400px; text-align:center; box-shadow:0 0 15px #000;">
+        <p id="custom-confirm-msg" style="margin-bottom:20px;">¿Estás seguro?</p>
+        <button id="confirm-yes" style="margin-right:10px; padding:6px 12px;">Aceptar</button>
+        <button id="confirm-no" style="padding:6px 12px;">Cancelar</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Confirmar al quitar si ya evaluó
+    document.querySelectorAll("form[action*='asignar_quitar.php']").forEach(form => {
+        form.addEventListener("submit", function (e) {
+            const accion = form.querySelector("input[name='accion']").value;
+            if (accion === "quitar") {
+                const select = form.querySelector("select[name='id_usuario']");
+                const selectedOption = select?.selectedOptions?.[0];
+
+                if (!selectedOption) return;
+
+                const yaEvaluo = selectedOption.dataset.evaluado === "1";
+
+                if (yaEvaluo) {
+                    e.preventDefault();
+                    showCustomConfirm("⚠️ Este revisor ya evaluó el artículo. ¿Estás seguro de que deseas quitarlo?", function(confirmado) {
+                        if (confirmado) form.submit();
+                    });
+                }
+            }
+        });
+    });
+});
+</script>
+
+
+
+<script>
+function eliminarPorID() {
+    const id = document.getElementById('delete-id').value;
+    const row = document.getElementById('row-' + id);
+    const alertBox = document.getElementById('delete-alert');
+
+    if (!row) {
+        alertBox.style.display = 'block';
+        alertBox.style.backgroundColor = '#f8d7da';
+        alertBox.style.color = '#721c24';
+        alertBox.innerText = '❌ Artículo no encontrado';
+        return;
+    }
+
+    const titulo = row.dataset.title;
+    const contacto = row.dataset.contacto;
+
+    if (confirm(`¿Eliminar artículo #${id} - "${titulo}" de ${contacto}?`)) {
+        const formData = new FormData();
+        formData.append('id_articulo', id);
+
+        fetch('../../controladores/eliminar_articulo.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            alertBox.style.display = 'block';
+            alertBox.innerText = data.message;
+            if (data.status === 'success') {
+                alertBox.style.backgroundColor = '#d4edda';
+                alertBox.style.color = '#155724';
+                row.remove();
+            } else {
+                alertBox.style.backgroundColor = '#f8d7da';
+                alertBox.style.color = '#721c24';
+            }
+        })
+        .catch(() => {
             alertBox.style.display = 'block';
             alertBox.style.backgroundColor = '#f8d7da';
             alertBox.style.color = '#721c24';
-            alertBox.innerText = '❌ Artículo no encontrado';
-            return;
-        }
-
-        const titulo = row.dataset.title;
-        const contacto = row.dataset.contacto;
-
-        if (confirm(`¿Eliminar artículo #${id} - "${titulo}" de ${contacto}?`)) {
-            const formData = new FormData();
-            formData.append('id_articulo', id);
-
-            fetch('../../controladores/eliminar_articulo.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(res => res.json())
-            .then(data => {
-                alertBox.style.display = 'block';
-                alertBox.innerText = data.message;
-                if (data.status === 'success') {
-                    alertBox.style.backgroundColor = '#d4edda';
-                    alertBox.style.color = '#155724';
-                    row.remove();
-                } else {
-                    alertBox.style.backgroundColor = '#f8d7da';
-                    alertBox.style.color = '#721c24';
-                }
-            })
-            .catch(() => {
-                alertBox.style.display = 'block';
-                alertBox.style.backgroundColor = '#f8d7da';
-                alertBox.style.color = '#721c24';
-                alertBox.innerText = '⚠️ Error de conexión con el servidor.';
-            });
-        }
+            alertBox.innerText = '⚠️ Error de conexión con el servidor.';
+        });
     }
-    </script>
+}
+</script>
 <?php else: ?>
-    <table border="1" cellpadding="6">
+    
+    <table class="tabla-asignaciones">
     <tr>
-        <th>Nombre</th><th>Especialización</th><th>Artículos Asignados</th><th>Acción</th>
+        <th>Nombre</th>
+        <th>Especialización</th>
+        <th>Artículos Asignados</th>
+        <th>Acción</th>
     </tr>
     <?php foreach ($revisoresVista as $rev): ?>
         <?php
@@ -203,6 +366,7 @@ include_once(__DIR__ . '/../header.php');
 
             $revisados = [];
             $pendientes = [];
+            
 
             foreach ($artAsignados as $art) {
                 $estadoStmt = $conn->prepare("SELECT aceptacion FROM articulo WHERE id_articulo = ?");
@@ -226,6 +390,22 @@ include_once(__DIR__ . '/../header.php');
             });
 
             $opciones = array_merge($artValidos, $artAsignados);
+            $enviados = [];
+            $enviados = [];
+            foreach ($pendientes as $art) {
+                $stmtEnvio = $conn->prepare("
+                    SELECT COUNT(*) 
+                    FROM formulario 
+                    WHERE id_usuario = ? 
+                      AND id_articulo = ? 
+                      AND valoracion_global IS NOT NULL
+                      AND calidad_tecnica IS NOT NULL
+                ");
+                $stmtEnvio->execute([$rev['id_usuario'], $art['id_articulo']]);
+                if ($stmtEnvio->fetchColumn() > 0) {
+                    $enviados[] = $art['id_articulo'];
+                }
+            }            
         ?>
         <tr>
             <td><?= htmlspecialchars($rev['nombre']) ?></td>
@@ -234,7 +414,10 @@ include_once(__DIR__ . '/../header.php');
                 <strong><?= count($revisados) ?> Revisado(s)</strong><br>
                 <strong><?= count($pendientes) ?> Pendiente(s):</strong>
                 <?php foreach ($pendientes as $art): ?>
-                    <div class="article-title-box"><?= htmlspecialchars($art['titulo']) ?></div>
+                    <?php $esEnviado = in_array($art['id_articulo'], $enviados); ?>
+                    <div class="article-title-box <?= $esEnviado ? 'formulario-enviado' : '' ?>">
+                        <?= htmlspecialchars($art['titulo']) ?>
+                    </div>
                 <?php endforeach; ?>
             </td>
             <td>
@@ -263,5 +446,6 @@ include_once(__DIR__ . '/../header.php');
         </tr>
     <?php endforeach; ?>
 </table>
-<script src="../../public/js/gestionar_asignaciones.js"></script>
+
+
 <?php endif; ?>

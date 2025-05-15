@@ -231,3 +231,94 @@ button[name="id_usuario"]:hover {
 .btn-rojo:hover {
     background-color: #a91e2c;
 }
+
+.animated-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #f44336;
+    color: white;
+    padding: 14px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    opacity: 1;
+    animation: fadeInUp 0.3s ease;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.animated-toast.hide {
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.toast-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    background-color: #dc3545;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    font-weight: bold;
+}
+
+.toast-popup.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-popup.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+
+.boton-accion {
+    padding: 4px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    width: auto;
+}
+
+.accion-botones {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.accion-form {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+}
+
+
+table th:last-child,
+table td:last-child {
+    width: 130px; /* ajusta según lo que desees */
+    min-width: 100px;
+    max-width: 150px;
+    text-align: center;
+    white-space: nowrap; /* evita salto de línea */
+}
+
+

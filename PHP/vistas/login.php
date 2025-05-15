@@ -12,7 +12,7 @@ if (isset($_SESSION['id_usuario'])) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar sesión</title>
+    <title>Gescon</title>
 </head>
 <body>
   <div class="login-container">

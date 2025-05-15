@@ -23,7 +23,7 @@ $usuario = Usuario::obtenerPorID($_SESSION['id_usuario']);
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil de Usuario</title>
+    <title>Gescon</title>
     <link rel="stylesheet" href="../public/css/perfil.css">
 </head>
 <body>

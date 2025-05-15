@@ -20,6 +20,37 @@ function linkItem($href, $label, $current) {
         <?= htmlspecialchars($tituloPagina) ?>
     </div>
     <nav>
+    <style>
+        header nav a {
+            position: relative;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        header nav a::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #fff;
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+
+        header nav a:hover {
+            color: #ffc107;
+        }
+
+        header nav a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+    </style>
+
         <?= linkItem('/Proyecto/PHP/vistas/dashboard.php', 'Inicio', $current) ?>
         <?= linkItem('/Proyecto/PHP/vistas/perfil.php', 'Perfil', $current) ?>
         <?php if (in_array($_SESSION['rol'], [2, 3, 4])): ?>

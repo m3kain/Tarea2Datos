@@ -277,3 +277,75 @@ td:nth-child(2) .topico-box {
 .auto-btn:hover {
     background-color: #218838;
 }
+
+.tabla-asignaciones {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.tabla-asignaciones th {
+    background-color: #007bff;
+    color: white;
+    padding: 14px;
+    font-size: 16px;
+    text-align: left;
+}
+
+.tabla-asignaciones td {
+    background-color: #fff;
+    padding: 16px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.article-title-box {
+    display: inline-block;
+    background-color: #f1f1f1;
+    padding: 6px 10px;
+    margin: 4px 4px 0 0;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.actions select, .actions button {
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.actions button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.actions button:hover {
+    background-color: #0056b3;
+}
+
+th:nth-child(1), td:nth-child(1),
+th:nth-child(2), td:nth-child(2),
+th:nth-child(4), td:nth-child(4) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.formulario-enviado {
+    background-color: #d4edda;
+    border-left: 3px solid #28a745;
+    color: #155724;
+}
+

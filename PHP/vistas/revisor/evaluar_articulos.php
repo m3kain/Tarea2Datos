@@ -23,7 +23,7 @@ include_once(__DIR__ . '/../header.php');
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Evaluar Artículos</title>
+    <title>Gescon</title>
     <link rel="stylesheet" href="../../public/css/evaluar_articulos.css">
 </head>
 <body>
