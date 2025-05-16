@@ -41,12 +41,7 @@ if (in_array($rol, [2, 4])) {
     }
 }
 
-if (in_array($rol, [3, 4])) {
-    $stmt = $conn->prepare("DELETE FROM formulario WHERE id_usuario = ? AND calidad_tecnica IS NULL AND valoracion_global IS NULL");
-    $stmt->execute([$id]);
-}
 
-$conn->prepare("DELETE FROM especializacion WHERE id_usuario = ?")->execute([$id]);
 $conn->prepare("DELETE FROM usuarios WHERE id_usuario = ?")->execute([$id]);
 
 session_destroy();

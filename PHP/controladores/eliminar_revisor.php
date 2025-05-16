@@ -14,15 +14,24 @@ if (!isset($_POST['id_revisor'])) {
 $id = (int) $_POST['id_revisor'];
 
 try {
-    // Verificar si el revisor tiene asignaciones
-    $stmt = $conn->prepare("SELECT COUNT(*) FROM formulario WHERE id_usuario = ?");
+    // Verifica si tiene artículos pendientes por revisar
+    $stmt = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM formulario 
+        WHERE id_usuario = ? AND (calidad_tecnica IS NULL OR valoracion_global IS NULL)
+    ");
     $stmt->execute([$id]);
-    if ($stmt->fetchColumn() > 0) {
-        echo json_encode(['status' => 'error', 'message' => 'Este revisor tiene artículos asignados.']);
+    $pendientes = $stmt->fetchColumn();
+
+    if ((int)$pendientes > 0) {
+        echo json_encode(['status' => 'error', 'message' => 'No puedes eliminar un revisor con artículos pendientes.']);
         exit;
     }
 
-    // Eliminar revisor
+    // Eliminar especializaciones asociadas (opcional pero recomendable)
+    $conn->prepare("DELETE FROM especializacion WHERE id_usuario = ?")->execute([$id]);
+
+    // Eliminar usuario
     $stmt = $conn->prepare("DELETE FROM usuarios WHERE id_usuario = ?");
     $stmt->execute([$id]);
 

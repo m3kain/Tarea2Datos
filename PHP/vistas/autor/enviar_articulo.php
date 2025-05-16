@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <title>Gescon</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../../public/css/enviar_articulo.css">
+
   <style>
     .message.success { color: green; text-align: center; margin-bottom: 1rem; }
     .topics {
@@ -72,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
   <div class="container fade-in">
     <h2>Enviar nuevo artículo</h2>
-    <p><a class="back-link" href="../dashboard.php">← Volver al Dashboard</a></p>
+    <p><a class="back-link" href="../dashboard.php">← Volver </a></p>
 
     <?php if (!empty($mensaje)): ?>
       <div class="message <?= strpos($mensaje, 'correctamente') !== false ? 'success' : '' ?>"> <?= htmlspecialchars($mensaje) ?> </div>
