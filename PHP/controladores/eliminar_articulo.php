@@ -27,7 +27,7 @@ if ((int)$subclase === 1) {
     }
 
     if ((int)$row['autor_contacto'] !== 1) {
-        echo json_encode(["status" => "error", "message" => "🚫 No es autor de contacto."]);
+        echo json_encode(["status" => "error", "message" => "⚠️ No es autor de contacto."]);
         exit;
     }
 
@@ -35,15 +35,52 @@ if ((int)$subclase === 1) {
 }
 
 if (!$permiso) {
-    echo json_encode(["status" => "error", "message" => "🚫 No tienes permisos para eliminar este artículo."]);
+    echo json_encode(["status" => "error", "message" => "No tienes permisos para eliminar este artículo."]);
     exit;
 }
 
-// Eliminar
-$conn->prepare("DELETE FROM formulario WHERE id_articulo = ?")->execute([$idArticulo]);
-$conn->prepare("DELETE FROM topicos WHERE id_articulo = ?")->execute([$idArticulo]);
-$conn->prepare("DELETE FROM escribiendo WHERE id_articulo = ?")->execute([$idArticulo]);
-$conn->prepare("DELETE FROM articulo WHERE id_articulo = ?")->execute([$idArticulo]);
+try {
+    $conn->beginTransaction();
 
-echo json_encode(["status" => "success", "message" => "✅ Artículo eliminado correctamente."]);
+    $stmt = $conn->prepare("SELECT id_usuario FROM escribiendo WHERE id_articulo = ?");
+    $stmt->execute([$idArticulo]);
+    $usuariosRelacionados = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $conn->prepare("DELETE FROM formulario WHERE id_articulo = ?")->execute([$idArticulo]);
+    $conn->prepare("DELETE FROM topicos WHERE id_articulo = ?")->execute([$idArticulo]);
+    $conn->prepare("DELETE FROM escribiendo WHERE id_articulo = ?")->execute([$idArticulo]);
+
+    // Verificamos si el artículo existía realmente
+    $stmt = $conn->prepare("DELETE FROM articulo WHERE id_articulo = ?");
+    $stmt->execute([$idArticulo]);
+
+
+    if ($stmt->rowCount() === 0) {
+        $conn->rollBack();
+        echo json_encode(["status" => "error", "message" => "❌ El artículo no existe o ya fue eliminado."]);
+        exit;
+    }
+
+    if (!empty($usuariosRelacionados)) {
+        $in = str_repeat('?,', count($usuariosRelacionados) - 1) . '?';
+
+        $stmt = $conn->prepare("SELECT u.id_usuario FROM usuarios u WHERE u.subclase = 4 AND u.id_usuario IN ($in) AND NOT EXISTS (SELECT 1 FROM escribiendo e WHERE e.id_usuario = u.id_usuario)");
+        $stmt->execute($usuariosRelacionados);
+        $aDegradar = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if (!empty($aDegradar)) {
+            $in2 = str_repeat('?,', count($aDegradar) - 1) . '?';
+            $stmt = $conn->prepare("UPDATE usuarios SET subclase = 3 WHERE id_usuario IN ($in2)");
+            $stmt->execute($aDegradar);
+        }
+    }
+
+    $conn->commit();
+    echo json_encode(["status" => "success", "message" => "✅ Artículo eliminado correctamente."]);
+} catch (PDOException $e) {
+    $conn->rollBack();
+    error_log("ERROR al eliminar artículo: " . $e->getMessage());
+    echo json_encode(["status" => "error", "message" => "❌ No se pudo eliminar el artículo."]);
+}
+
 exit;

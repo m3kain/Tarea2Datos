@@ -1,248 +1,258 @@
+/* perfil.css */
+
 body {
-    font-family: 'Segoe UI', Tahoma, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
-    margin: 0;
-    padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 40px 20px;
 }
 
 .perfil-container {
-    max-width: 800px;
-    margin: auto;
-    background: #fff;
-    padding: 30px 40px;
-    border-radius: 10px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  max-width: 800px;
+  margin: auto;
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
 h2, h3, h4 {
-    color: #222;
-    margin-bottom: 20px;
+  color: #222;
+  margin-bottom: 20px;
 }
 
 form label {
-    display: block;
-    margin-bottom: 14px;
-    font-weight: 500;
+  display: block;
+  margin-bottom: 14px;
+  font-weight: 500;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"] {
-    width: 100%;
-    padding: 10px 12px;
-    margin-top: 4px;
-    margin-bottom: 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 15px;
-    background-color: #fefefe;
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fefefe;
 }
 
 button {
-    margin-top: 12px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    border: none;
-    color: white;
-    font-weight: 600;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  margin-top: 12px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 button.btn-danger {
-    background-color: #dc3545;
-    margin-left: 10px;
+  background-color: #dc3545;
+  margin-left: 10px;
 }
 
 button.btn-danger:hover {
-    background-color: #a91e2c;
+  background-color: #a91e2c;
 }
 
 a.logout-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #fff;
-    background-color: #6c757d;
-    padding: 8px 16px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
+  display: inline-block;
+  margin-top: 20px;
+  color: #fff;
+  background-color: #6c757d;
+  padding: 8px 16px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 a.logout-link:hover {
-    background-color: #5a6268;
+  background-color: #5a6268;
 }
 
 .perfil-nav a {
-    display: inline-block;
-    margin-top: 25px;
-    margin-right: 18px;
-    color: #007bff;
-    font-weight: 600;
-    text-decoration: none;
+  display: inline-block;
+  margin-top: 25px;
+  margin-right: 18px;
+  color: #007bff;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .perfil-nav a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 hr {
-    margin: 30px 0;
-    border: none;
-    border-top: 1px solid #ddd;
+  margin: 30px 0;
+  border: none;
+  border-top: 1px solid #ddd;
 }
 
-
 .btn-logout {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 18px;
-    background-color: #6c757d;
-    color: white;
-    text-decoration: none;
-    font-weight: 500;
-    border-radius: 5px;
-    transition: background-color 0.3s;
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 18px;
+  background-color: #6c757d;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 5px;
+  transition: background-color 0.3s;
 }
 
 .btn-logout:hover {
-    background-color: #5a6268;
+  background-color: #5a6268;
 }
-
-
-button,
-a.btn-logout {
-    font-size: 14px;
-}
-
 
 .articulos-lista {
-    margin-top: 2rem;
-    padding: 1rem;
-    background: #fff;
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  }
-  
-  .articulo-item {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .articulo-item:last-child {
-    border-bottom: none;
-  }
-  
-  .articulo-estado {
-    font-weight: 500;
-    margin-left: 0.5rem;
-  }
-  
-  .articulo-botones {
-    margin-top: 0.5rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .articulo-botones a,
-  .articulo-botones form button {
-    background: #007bff;
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-decoration: none;
-  }
-  
-  .articulo-botones form button {
-    background: #dc3545;
-  }
-  
-  .articulo-botones a:hover {
-    background: #0056b3;
-  }
-  
-  .articulo-botones form button:hover {
-    background: #c82333;
-  }
-  
-  .toast-container {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    z-index: 9999;
-  }
-  
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #444;
-    color: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    z-index: 9999;
-    font-size: 0.95rem;
-  }
-  .toast.visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(-10px);
-  }
-  .toast.success {
-    background-color: #28a745;
-  }
-  .toast.error {
-    background-color: #dc3545;
-  }
-  
-  
-  /* Estilo tabla de revisiones */
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.articulo-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.articulo-item:last-child {
+  border-bottom: none;
+}
+
+.articulo-estado {
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+/* NUEVO BLOQUE REEMPLAZA el actual para unificar estilos */
+.articulo-botones a.btn-editar,
+.articulo-botones button.btn-eliminar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1.2;
+  min-width: 100px;
+  height: 40px;
+}
+
+/* Estilo individual para editar */
+.articulo-botones a.btn-editar {
+  background-color: #007bff;
+  color: white;
+}
+
+.articulo-botones a.btn-editar:hover {
+  background-color: #0056b3;
+}
+
+/* Estilo individual para eliminar */
+.articulo-botones button.btn-eliminar {
+  background-color: #dc3545;
+  color: white;
+}
+
+.articulo-botones button.btn-eliminar:hover {
+  background-color: #b02a37;
+}
+
+
+.articulo-botones form {
+  margin: 0;
+}
+
+.toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #444;
+  color: #fff;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+  font-size: 0.95rem;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-10px);
+}
+
+.toast.success {
+  background-color: #28a745;
+}
+
+.toast.error {
+  background-color: #dc3545;
+}
+
 .tabla-revisiones {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .tabla-revisiones th {
-    background-color: #f1f3f5;
-    color: #333;
-    text-align: left;
-    padding: 10px;
-    font-weight: 600;
+  background-color: #f1f3f5;
+  color: #333;
+  text-align: left;
+  padding: 10px;
+  font-weight: 600;
 }
 
 .tabla-revisiones td {
-    padding: 10px;
-    border-top: 1px solid #eee;
-    vertical-align: top;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  vertical-align: top;
 }
 
 .tabla-revisiones tr:nth-child(even) {
-    background-color: #f9f9f9;
+  background-color: #f9f9f9;
 }
 
 .tabla-revisiones tr:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
 }
 
 .tabla-revisiones td:last-child,
 .tabla-revisiones th:last-child {
-    width: 22%;
+  width: 22%;
 }

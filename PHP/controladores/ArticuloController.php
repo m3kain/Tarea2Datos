@@ -30,7 +30,6 @@ class ArticuloController {
         }
 
     
-        // 🔒 Validar que ningún autor haya enviado antes un artículo con el mismo título
         foreach ($autores as $autor) {
             $email = trim($autor['email']);
             $stmt = $conn->prepare("
@@ -76,7 +75,17 @@ class ArticuloController {
                 $idAutor = $conn->lastInsertId();
             } else {
                 $idAutor = $usuario['id_usuario'];
+            
+                $stmtRol = $conn->prepare("SELECT subclase FROM usuarios WHERE id_usuario = ?");
+                $stmtRol->execute([$idAutor]);
+                $subclase = $stmtRol->fetchColumn();
+            
+                if ((int)$subclase === 3) {
+                    $stmtUpdate = $conn->prepare("UPDATE usuarios SET subclase = 4 WHERE id_usuario = ?");
+                    $stmtUpdate->execute([$idAutor]);
+                }
             }
+            
     
             $stmtEscrib = $conn->prepare("INSERT INTO escribiendo (id_usuario, id_articulo, autor_contacto) VALUES (?, ?, ?)");
             $stmtEscrib->execute([$idAutor, $idArticulo, $contacto]);

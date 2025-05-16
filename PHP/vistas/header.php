@@ -15,6 +15,9 @@ function linkItem($href, $label, $current) {
     return "<a href=\"$href\" style=\"color: white; margin-right: 15px;\">$label</a>";
 }
 ?>
+<link rel="stylesheet" href="/Proyecto/PHP/public/css/styles.css">
+
+
 <header style="background: #007bff; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
     <div style="font-size: 20px; font-weight: bold; color: white;">
         <?= htmlspecialchars($tituloPagina) ?>
@@ -49,6 +52,17 @@ function linkItem($href, $label, $current) {
             transform: scaleX(1);
             transform-origin: bottom left;
         }
+
+        body.fade-in {
+            opacity: 1;
+            transition: opacity 0.3s ease-in;
+        }
+
+        body.fade-out {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+        
     </style>
 
         <?= linkItem('/Proyecto/PHP/vistas/dashboard.php', 'Inicio', $current) ?>
@@ -64,4 +78,7 @@ function linkItem($href, $label, $current) {
             <?= linkItem('/Proyecto/PHP/vistas/jefe/gestion_asignaciones.php', 'Gestión de asignaciones', $current) ?>
         <?php endif; ?>
     </nav>
+    <script src="/Proyecto/PHP/public/js/global.js"></script>
+
 </header>
+

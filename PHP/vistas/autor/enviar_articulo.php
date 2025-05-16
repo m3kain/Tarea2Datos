@@ -106,7 +106,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <?php endif; ?>
             </div>
           <?php endforeach; ?>
-          
         </div>
         <button type="button" class="add-btn" onclick="agregarAutor()">Agregar autor</button>
       </div>

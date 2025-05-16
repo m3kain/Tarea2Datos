@@ -1,11 +1,22 @@
 
 
 body {
+    opacity: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f9f9f9;
     margin: 40px;
     color: #333;
     font-size: 18px;
+}
+
+body.fade-in {
+    opacity: 1;
+    transition: opacity 0.3s ease-in;
+}
+
+body.fade-out {
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
 }
 
 h2, h3, h4 {

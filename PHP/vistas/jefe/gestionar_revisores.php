@@ -82,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => toast.remove(), 800);
         }, 4000);
 
-        // Quitar ?error=... de la URL sin recargar
         const url = new URL(window.location);
         url.searchParams.delete("error");
         window.history.replaceState({}, document.title, url);
@@ -90,6 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<div id="alerta-especialidades" class="toast-popup error" style="display:none;"></div>
 
 <div class="agregar-revisor-panel">
     <h3>Agregar nuevo revisor</h3>
@@ -192,37 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("form.accion-form").forEach(form => {
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
 
-            const formData = new FormData(this);
-            const row = form.closest("tr");
-
-            showCustomConfirm("⚠️ ¿Seguro que deseas eliminar este revisor?", confirmado => {
-                if (!confirmado) return;
-
-                fetch(this.action, {
-                    method: "POST",
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === "success") {
-                        showToast("✅ Revisor eliminado exitosamente", "success");
-                        row.remove();
-                    } else {
-                        showToast("❌ " + (data.message || "Error al eliminar"), "error");
-                    }
-                })
-                .catch(() => {
-                    showToast("⚠️ Error de conexión con el servidor", "error");
-                });
-            });
-        });
-    });
-});
 
 function showToast(message, type = "info") {
     const toast = document.createElement("div");
@@ -245,6 +215,28 @@ function showToast(message, type = "info") {
 }
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector(".agregar-revisor-panel form");
+    const alerta = document.getElementById("alerta-especialidades");
+
+    form.addEventListener("submit", function (e) {
+        const checkboxes = form.querySelectorAll("input[name='areas[]']:checked");
+
+        if (checkboxes.length === 0) {
+            e.preventDefault();
+            alerta.textContent = "⚠️ Debe seleccionar al menos una especialidad.";
+            alerta.style.display = "block";
+            alerta.classList.add("show");
+
+            setTimeout(() => {
+                alerta.classList.remove("show");
+                alerta.style.display = "none";
+            }, 4000);
+        }
+    });
+});
+</script>
 
 
 <script>
@@ -352,7 +344,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.status === "success" || data.status === "ok") {
-                        showToast("✅ Revisor eliminado exitosamente", "success");
+                        showToast("✅ Revisor eliminado", "success");
                         row.remove();
                     } else {
                         showToast("❌ " + (data.message || "Error al eliminar"), "error");

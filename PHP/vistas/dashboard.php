@@ -31,10 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['buscar'])) {
 
 
 $mejores = Articulo::mejoresCalificados();
+
+include_once(__DIR__ . '/header.php');
+
 ?>
 
 
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -42,54 +46,11 @@ $mejores = Articulo::mejoresCalificados();
     <link rel="stylesheet" href="../public/css/dashboard.css">
 </head>
 <body>
-
-    <header style="background: #007bff; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
-        <div><strong>Bienvenido, <?= htmlspecialchars($_SESSION['nombre'] ?? 'Usuario') ?></strong></div>
-        <nav>
-            <style>
-                header nav a {
-                    position: relative;
-                    text-decoration: none;
-                    font-weight: 600;
-                    transition: color 0.3s ease;
-                }
-
-                header nav a::after {
-                    content: "";
-                    position: absolute;
-                    width: 100%;
-                    transform: scaleX(0);
-                    height: 2px;
-                    bottom: -2px;
-                    left: 0;
-                    background-color: #fff;
-                    transform-origin: bottom right;
-                    transition: transform 0.3s ease-out;
-                }
-
-                header nav a:hover {
-                    color: #ffc107;
-                }
-
-                header nav a:hover::after {
-                    transform: scaleX(1);
-                    transform-origin: bottom left;
-                }
-            </style>
-
-            <a href="perfil.php" style="color: white; margin-right: 15px;">Perfil</a>
-            <?php if (in_array($_SESSION['rol'], [2, 3, 4])): ?>
-                <a href="autor/enviar_articulo.php" style="color: white; margin-right: 15px;">Enviar artículo</a>
-            <?php endif; ?>
-            <?php if (in_array($_SESSION['rol'], [3, 4])): ?>
-                <a href="revisor/evaluar_articulos.php" style="color: white; margin-right: 15px;">Evaluar artículos</a>
-            <?php endif; ?>
-            <?php if ($_SESSION['rol'] == 1): ?>
-                <a href="jefe/gestionar_revisores.php" style="color: white; margin-right: 15px;">Gestión de revisores</a>
-                <a href="jefe/gestion_asignaciones.php" style="color: white;">Gestión de asignaciones</a>
-            <?php endif; ?>
-        </nav>
-    </header>
+    <style>
+        .cards-container {
+            gap: 60px !important;
+        }
+    </style>
     
     <main style="padding: 20px; max-width: 1000px; margin: auto;">
         <section>

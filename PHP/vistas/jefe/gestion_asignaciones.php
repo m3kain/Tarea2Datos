@@ -92,6 +92,28 @@ include_once(__DIR__ . '/../header.php');
 <head>
     <meta charset="UTF-8">
     <title>Gescon</title>
+    <style>
+    .toast-popup {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: bold;
+        font-size: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 9999;
+    }
+    .toast-popup.show {
+        opacity: 1;
+    }
+    .toast-popup.hide {
+        opacity: 0;
+    }
+    </style>
 </head>
 
 <h2 class="asignacion-title">📋 Asignaciones</h2>
@@ -110,6 +132,13 @@ include_once(__DIR__ . '/../header.php');
 <form method="POST" action="../../controladores/asignacion_automatica.php" style="text-align:center; margin-bottom:20px;">
     <button type="submit" class="auto-btn">🔁 Asignación Automática</button>
 </form>
+
+<?php if (isset($_GET['error'])): ?>
+    <div id="toast-error" class="toast-popup error"><?= htmlspecialchars($_GET['error']) ?></div>
+<?php endif; ?>
+
+
+
 
 
 
@@ -186,6 +215,20 @@ include_once(__DIR__ . '/../header.php');
             </tr>
         <?php endforeach; ?>
     </table>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const toast = document.getElementById("toast-error");
+        if (toast) {
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.add("hide");
+                setTimeout(() => toast.remove(), 800);
+            }, 4000);
+        }
+    });
+    </script>
+
+
 
     <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -301,21 +344,12 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 function eliminarPorID() {
     const id = document.getElementById('delete-id').value;
-    const row = document.getElementById('row-' + id);
-    const alertBox = document.getElementById('delete-alert');
 
-    if (!row) {
-        alertBox.style.display = 'block';
-        alertBox.style.backgroundColor = '#f8d7da';
-        alertBox.style.color = '#721c24';
-        alertBox.innerText = '❌ Artículo no encontrado';
-        return;
-    }
+    const mensaje = `⚠️ ¿Eliminar artículo #${id}? Esta acción es irreversible.`;
 
-    const titulo = row.dataset.title;
-    const contacto = row.dataset.contacto;
+    showCustomConfirm(mensaje, (confirmado) => {
+        if (!confirmado) return;
 
-    if (confirm(`¿Eliminar artículo #${id} - "${titulo}" de ${contacto}?`)) {
         const formData = new FormData();
         formData.append('id_articulo', id);
 
@@ -323,28 +357,57 @@ function eliminarPorID() {
             method: 'POST',
             body: formData
         })
-        .then(res => res.json())
-        .then(data => {
-            alertBox.style.display = 'block';
-            alertBox.innerText = data.message;
-            if (data.status === 'success') {
-                alertBox.style.backgroundColor = '#d4edda';
-                alertBox.style.color = '#155724';
-                row.remove();
-            } else {
-                alertBox.style.backgroundColor = '#f8d7da';
-                alertBox.style.color = '#721c24';
+        .then(async res => {
+            const text = await res.text();
+            try {
+                const data = JSON.parse(text);
+                showToast(data.message, data.status === 'success' ? 'success' : 'error');
+
+                if (data.status === 'success') {
+                    const row = document.getElementById('row-' + id);
+                    if (row) {
+                        row.style.transition = "opacity 0.4s ease";
+                        row.style.opacity = "0";
+                        setTimeout(() => row.remove(), 400);
+                    }
+                }
+            } catch (e) {
+                console.error("❌ No JSON:", text);
+                showToast("⚠️ Error inesperado del servidor", "error");
             }
         })
-        .catch(() => {
-            alertBox.style.display = 'block';
-            alertBox.style.backgroundColor = '#f8d7da';
-            alertBox.style.color = '#721c24';
-            alertBox.innerText = '⚠️ Error de conexión con el servidor.';
+        .catch(err => {
+            console.error("❌ Red error:", err);
+            showToast("❌ Error de red o conexión", "error");
         });
-    }
+    });
 }
 </script>
+
+
+<script>
+function showToast(message, type = "info") {
+    const toast = document.createElement("div");
+    toast.className = "toast-popup show";
+    toast.textContent = message;
+
+    // Color por tipo
+    if (type === "success") {
+        toast.style.backgroundColor = "#28a745";
+    } else if (type === "error") {
+        toast.style.backgroundColor = "#dc3545";
+    } else {
+        toast.style.backgroundColor = "#17a2b8";
+    }
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("hide"), 3500);
+    setTimeout(() => toast.remove(), 4500);
+}
+</script>
+
+
 <?php else: ?>
     
     <table class="tabla-asignaciones">
@@ -446,6 +509,24 @@ function eliminarPorID() {
         </tr>
     <?php endforeach; ?>
 </table>
+
+<script>
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast-popup ${type}`;
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100); // fade in
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.add('hide');
+        setTimeout(() => toast.remove(), 800); // remove from DOM
+    }, 4000);
+}
+</script>
+
 
 
 <?php endif; ?>

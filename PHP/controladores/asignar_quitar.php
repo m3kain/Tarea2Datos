@@ -37,7 +37,9 @@ try {
                 $esAutor = $stmt->fetchColumn();
             
                 if ($esAutor) {
-                    die("No se puede asignar el artículo a un revisor que es su autor.");
+                    $mensaje = urlencode("No se puede asignar el artículo a un revisor que es su autor.");
+                    header("Location: ../vistas/jefe/gestion_asignaciones.php?view=$view&error=$mensaje");
+                    exit;
                 }
             }
             
