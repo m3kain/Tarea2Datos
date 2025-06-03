@@ -89,7 +89,7 @@ button[name="id_usuario"]:hover {
 }
 
 
-/* gestion_revisores.css */
+
 
 .agregar-revisor-panel {
     background: white;
@@ -164,7 +164,7 @@ button[name="id_usuario"]:hover {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.4); /* fondo oscuro */
+    background-color: rgba(0,0,0,0.4); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -314,11 +314,11 @@ button[name="id_usuario"]:hover {
 
 table th:last-child,
 table td:last-child {
-    width: 130px; /* ajusta según lo que desees */
+    width: 130px; 
     min-width: 100px;
     max-width: 150px;
     text-align: center;
-    white-space: nowrap; /* evita salto de línea */
+    white-space: nowrap; 
 }
 
 

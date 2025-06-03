@@ -62,7 +62,7 @@ CREATE TABLE formulario (
     comentarios_autores TEXT,
     manual TINYINT(1) DEFAULT 0,
     PRIMARY KEY (id_usuario, id_articulo),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE RESTRICT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_articulo) REFERENCES articulo(id_articulo) ON DELETE CASCADE
 );
 
@@ -126,19 +126,24 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
 CREATE TRIGGER trigger_actualizar_aceptacion
 AFTER INSERT ON formulario
 FOR EACH ROW
 BEGIN
     CALL evaluar_aceptacion(NEW.id_articulo);
-END;
+END$$
 
 CREATE TRIGGER trigger_actualizar_aceptacion_update
 AFTER UPDATE ON formulario
 FOR EACH ROW
 BEGIN
     CALL evaluar_aceptacion(NEW.id_articulo);
-END;
+END$$
+
+DELIMITER ;
+
 
 
 

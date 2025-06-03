@@ -75,10 +75,14 @@ button:hover {
 
 
 .filtros-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-}
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 10px 0;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
 
 
 .scrollable-table {

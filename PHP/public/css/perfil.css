@@ -140,7 +140,7 @@ hr {
   margin-left: 0.5rem;
 }
 
-/* NUEVO BLOQUE REEMPLAZA el actual para unificar estilos */
+
 .articulo-botones a.btn-editar,
 .articulo-botones button.btn-eliminar {
   display: inline-flex;
@@ -159,7 +159,7 @@ hr {
   height: 40px;
 }
 
-/* Estilo individual para editar */
+
 .articulo-botones a.btn-editar {
   background-color: #007bff;
   color: white;
@@ -169,7 +169,7 @@ hr {
   background-color: #0056b3;
 }
 
-/* Estilo individual para eliminar */
+
 .articulo-botones button.btn-eliminar {
   background-color: #dc3545;
   color: white;

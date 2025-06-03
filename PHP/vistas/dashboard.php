@@ -61,18 +61,19 @@ include_once(__DIR__ . '/header.php');
                 <button type="submit" name="buscar" value="1">Buscar</button>
 
                 <div id="panelFiltros" style="display:none; margin-top: 10px;">
-                    Resumen: <input type="text" name="resumen" placeholder="Buscar por resumen..."><br>
-                    Autor: <input type="text" name="autor" placeholder="Nombre del autor"><br>
-                    Revisor: <input type="text" name="revisor" placeholder="Nombre del revisor"><br>
-                    Tópico: <input type="text" name="topico" placeholder="Tópico relacionado"><br>
-                    Desde: <input type="date" name="fecha_desde">
-                    Hasta: <input type="date" name="fecha_hasta"><br>
-                    Aceptación: 
-                    <select name="aceptacion">
+                    <div class="filtros-grid">
+                        <input type="text" name="resumen" placeholder="Resumen...">
+                        <input type="text" name="autor" placeholder="Autor...">
+                        <input type="text" name="revisor" placeholder="Revisor...">
+                        <input type="text" name="topico" placeholder="Tópico...">
+                        <input type="date" name="fecha_desde" placeholder="Desde...">
+                        <input type="date" name="fecha_hasta" placeholder="Hasta...">
+                        <select name="aceptacion">
                         <option value="">--</option>
                         <option value="1">Aceptado</option>
                         <option value="0">No aceptado</option>
-                    </select><br>
+                        </select>
+                    </div>
                 </div>
             </form>
         </section>

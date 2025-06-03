@@ -70,7 +70,6 @@ if ($view === 'articulos') {
         }
     }
 
-    // ✅ Ordena de menor a mayor pendientes
     usort($revisoresVista, function ($a, $b) {
         return count($a['pendientes']) <=> count($b['pendientes']);
     });
